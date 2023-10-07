@@ -88,19 +88,18 @@ the theorems [compose_Client_Server_correct2](DirectRefinement/demo/ClientServer
 [spec_sim_2](DirectRefinement/demo/ClientServer.v#146) in the Coq file 
 [demo/ClientServer.v](DirectRefinement/demo/ClientServer.v).
 
+## Installation
 
-## Requirements
 
-The compiler is based on CompCertO and CompCert v3.10. You can find the user manual of 
+###  Requirements
+
+This artifact is based on CompCertO and CompCert v3.10. You can find the user manual of 
 CompCert [here](http://compcert.inria.fr/man/).
 
-The development is known to compile with the following software:
-- Menhir v.20201216
-- Coq v8.9.1
-- OCaml v4.08.1
+- If you are using the VM, all the required software have already been installed on the 
+virtual machiine.
 
-## Instructions for compiling
-
+- If you prefer to compile the source code on your own computer, then
 We recommend using the `opam` package manager to set up a build environment. 
 We have tested the building on Linux with the following shell commands.
 
@@ -117,24 +116,58 @@ We have tested the building on Linux with the following shell commands.
     # Configure the current shell to use the newly created opam switch
     eval $(opam env)
 
-In addition, our modifications rely on the Coqrel library (repo in
+### Instructions for compiling
+
+To compile the source code, please enter the `DirectRefinement` directory.
+Our implementation relies on the Coqrel library (repo in
 [here](https://github.com/CertiKOS/coqrel/tree/38dd003d28c91b1b93c01a160a31cdbc3348916a)),
 which must be built first. To build Coqrel, proceed in the following
 way:
-
-    % (cd coqrel && ./configure && make)
-
-Finally, you can then build the compiler as follows:
-
-    % ./configure x86_64-linux
-    % make
-
+```
+      (cd coqrel && ./configure && make)
+```
+Then, you can then build the compiler as follows:
+```
+     ./configure x86_64-linux
+     make
+```
+The compilation should start and terminate successfully. 
 If appropriate to your setting, we recommend you use a `-j` option
 when invoking make so as to enable parallel compilation.
+[TODO:Our test environment and compilation time].
 
-[TODO]The generated [documentation](doc/index.html) is provided by CompCertO.
+If you want to compile the CompCertOv3.10, the same instructions should
+work in the other directory.
 
-## Structure of the Proofs
+### Navigating the proofs
+
+After that, you can navigate the source code by using emacs. For example, running
+
+```
+emacs cklr/InjectFootprint.v
+```
+
+opens the emacs window in proof-general mode for browsing the file
+`cklr/InjectFootprint.v`. The commands for navigating the Coq proof
+scripts can be found at 
+[here](https://proofgeneral.github.io/doc/master/userman/Introducing-Proof-General/).
+
+You can also compile the source code into html files for better
+presentation. Simply run the following command (which needs
+`coq2html` which has been installed on the VM)
+
+```
+make documentation
+```
+
+Then, the html versions of source code can be found at `doc/html`.
+Note that the [index page](doc/index.html) is provided by CompCertO.
+
+## Evaluation instructions
+
+
+
+## Additional artifact description
 
 For reference, you can browse the original CompCert source code [here]
 (http://compcert.inria.fr/doc/index.html). We also export our code as
