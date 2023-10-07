@@ -124,12 +124,12 @@ Our implementation relies on the Coqrel library (repo in
 which must be built first. To build Coqrel, proceed in the following
 way:
 ```
-      (cd coqrel && ./configure && make)
+(cd coqrel && ./configure && make)
 ```
 Then, you can then build the compiler as follows:
 ```
-     ./configure x86_64-linux
-     make
+./configure x86_64-linux
+make
 ```
 The compilation should start and terminate successfully. 
 If appropriate to your setting, we recommend you use a `-j` option
@@ -161,11 +161,18 @@ make documentation
 ```
 
 Then, the html versions of source code can be found at `doc/html`.
-Note that the [index page](doc/index.html) is provided by CompCertO.
+Note that the [index page](DirectRefinement/doc/index.html) is provided by CompCertO.
 
 ## Evaluation instructions
 
+To check soundness of this artifact, enter `DirectRefinement` and run
+```
+grep "Admitted" */*.v
+```
+This instruction should return no result.
 
+[TODO: compare the Lines of code with CompCertOv3.10, change the table in TR according to 
+modification of the code]
 
 ## Additional artifact description
 
