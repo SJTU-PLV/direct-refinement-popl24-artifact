@@ -526,9 +526,9 @@ Proof.
   (* move the wt_c to top level *)
   rewrite <- (lessdef_c_cklr ext) , cc_compose_assoc, <- (cc_compose_assoc wt_c) at 1.
   rewrite <- (cc_compose_assoc inj).
-  rewrite !wt_c_R_refinement. rewrite cc_compose_assoc.
+  rewrite !wt_R_refinement. rewrite cc_compose_assoc.
   rewrite <- (cc_compose_assoc injp).
-  rewrite wt_c_R_refinement. rewrite !cc_compose_assoc.
+  rewrite wt_R_refinement. rewrite !cc_compose_assoc.
   rewrite <- (cc_compose_assoc lessdef_c).
   rewrite lessdef_c_cklr.
 
@@ -615,7 +615,7 @@ Proof.
   rewrite <- (lessdef_c_cklr ext) at 1. rewrite !cc_compose_assoc.
   rewrite <- (cc_compose_assoc wt_c).
   rewrite <- (cc_compose_assoc injp).
-  rewrite wt_c_R_refinement.
+  rewrite wt_R_refinement.
   rewrite !cc_compose_assoc.
   rewrite <- (cc_compose_assoc lessdef_c).
   rewrite lessdef_c_cklr.
