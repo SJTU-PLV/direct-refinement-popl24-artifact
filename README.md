@@ -1,15 +1,29 @@
-# Fully Composable and Adequate Verified Compilation with Direct Refinement between Open Modules (Artifact for POPL 2024)
+# Fully Composable and Adequate Verified Compilation with Direct Refinements between Open Modules (Artifact for POPL 2024)
 
 ## Overview 
 
 This artifact consists of our development in the [DirectRefinement](DirectRefinement) directory and another directory [CompCertOv3.10](CompCertOv3.10) for comparison. The artifact accompanies the following paper:
 
-> [*Fully Composable and Adequate Verified Compilation with Direct Refinement between Open Modules*](paper/direct-refinement.pdf). Ling Zhang, Yuting Wang, Jinhua Wu, Jeremie Koenig and Zhong Shao
+> [*Fully Composable and Adequate Verified Compilation with Direct Refinements between Open Modules*](paper/direct-refinement.pdf). Ling Zhang, Yuting Wang, Jinhua Wu, Jeremie Koenig and Zhong Shao
 
 
 ## List of claims
 
 For the claims made in our paper, please refer to the source files in the [DirectRefinement](DirectRefinement) directory.
+
+Lemma 3.1 from Section3.2.1 (line 708) of the paper corresponds to the theorem [injp_injp2](DirectRefinement/cklr/InjectFootprint.v#L2481) in the Coq file [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v). Lemma 3.2 from Section3.2.2 (line 763) corresponds to the theorem [injp_injp](DirectRefinement/cklr/InjectFootprint.v#L472) in the same file.
+
+Lemma 4.1 from Section 4.1.2 (line 861) corresponds to the theorem [transf_program_correct](DirectRefinement/backend/Constpropproof.v#1097) in the Coq file [backend/Constpropproof.v](DirectRefinement/backend/Constpropproof.v).
+
+Definition 4.2 from Section 4.1.2 (line 874) can be found in
+[backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v#L1939).
+
+Lemma 4.3 from Section 4.2.1 (line 919) corresponds to the instances [commut_c_locset](DirectRefinement/driver/CallConv.v#L145), [commut_locset_mach](DirectRefinement/driver/CallConv.v#L1091) and [commut_mach_asm](DirectRefinement/driver/CallConv.v#L247) in [driver/CallConv.v](DirectRefinement/driver/CallConv.v)
+
+For Lemma 4.4 from Section 4.2.2 (line 929), the properties [(1)](DirectRefinement/cklr/InjectFootprint.v#L2550) [(2)](DirectRefinement/cklr/InjectFootprint.v#L2560) [(3)](DirectRefinement/cklr/InjectFootprint.v#L2606) can be found in [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v), property [(4)](DirectRefinement/cklr/InjectFootprint.v#L500) can be found in [cklr/Inject.v](DirectRefinement/cklr/Inject.v) and properties [(5)](DirectRefinement/cklr/Extends.v#L261) [(6)](DirectRefinement/cklr/Extends.v#L290) [(7)](DirectRefinement/cklr/Extends.v#L237) can be found in [cklr/Extends.v](DirectRefinement/cklr/Extends.v).
+
+
+
 
 ## Requirements
 
