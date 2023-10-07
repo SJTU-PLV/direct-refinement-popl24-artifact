@@ -102,7 +102,7 @@ virtual machiine.
 - If you prefer to compile the source code on your own computer, then
 We recommend using the `opam` package manager to set up a build environment. 
 We have tested the building on Linux with the following shell commands.
-
+```
     # Initialize opam (if you haven't used it before)
     opam init --bare
     
@@ -115,7 +115,7 @@ We have tested the building on Linux with the following shell commands.
     
     # Configure the current shell to use the newly created opam switch
     eval $(opam env)
-
+```
 ### Instructions for compiling
 
 To compile the source code, please enter the `DirectRefinement` directory.
