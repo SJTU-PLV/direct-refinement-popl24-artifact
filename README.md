@@ -181,41 +181,154 @@ source code of original CompCert [here](http://compcert.inria.fr/doc/index.html)
 Note that we use nominal memory model from Nominal CompCert[1] in our implementation
 for future extensions, while our result does not rely on it.
 
-We briefly present the framework of CompCertO, then introduce our implementation of direct
-refinement and the examples of end-to-end verification using direct refinement.
+We briefly present the framework of CompCertO as described in Section 2.1. We then demonstrate the key definitions and theorems for building direct refinement (Section 3 and 4). Finally we discuss the examples of end-to-end verification using direct refinement (Section 5).
+
 For CompCert's block-based memory model (Section 2.1.1), see 
 [common/Values.v](DirectRefinement/common/Values.v) and
 [common/Memory.v](DirectRefinement/common/Memory.v).
 
 ### CompCertO
 
-The language interfaces and simulation conventions are defined in 
-[common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v).
-This file also contains the "concatenation" of simulation conventions
-[cc_compose](DirectRefinement/common/LanguageInterface.v#),
-C level interface [li_c](DirectRefinement/common/LanguageInterface.v#)
-and C level simulation convention 
-[cc_c](DirectRefinement/common/LanguageInterface.v#cc_c) parameterized over
-[CompCert Kripke Logical Relation](DirectRefinement/CKLR.html#cklr) 
-(which we call Kripke Memory Relation in the paper).
-The definition of different memory relations and their properties are in 
-the `cklr` directory.
+#### Open semantics 
+The `language interface` is defined in [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v) together with the C level interface `li_c`:
+```
+Structure language_interface :=
+  mk_language_interface {
+    query: Type;
+    reply: Type;
+    entry: query -> val;
+  }.
 
-The open semantics and open simulations are defined in 
-[common/Smallstep.v](DirectRefinement/common/Smallstep.v).
-[Open semantics](DirectRefinement/common/Smallstep.v#)
-is essentially a mapping from global 
-[symbol table](DirectRefinement/Globalenvs.html#Genv.symtbl) to [open LTS](DirectRefinement/Smallstep.html#lts) and a skeleton
-of local definitions.
-The [forward simulation](DirectRefinement/Smallstep.html#forward_simulation) and the
-[vertical composition](DirectRefinement/Smallstep.html#compose_forward_simulations) are also defined here.
-The horizontal composition is defined in [SmallstepLinking.v](DirectRefinement/SmallstepLinking.html).
 
-You can refer the [CompCertO documentation page](DirectRefinement/index.html) for further detailed description of CompCertO implementation.
+Record c_query :=
+  cq {
+    cq_vf: val;
+    cq_sg: signature;
+    cq_args: list val;
+    cq_mem: mem;
+  }.
+
+Record c_reply :=
+  cr {
+    cr_retval: val;
+    cr_mem: mem;
+  }.
+
+Canonical Structure li_c :=
+  {|
+    query := c_query;
+    reply := c_reply;
+    entry := cq_vf;
+  |}.
+
+```
+
+`Open semantics` is essentially a mapping from global 
+symbol table to open LTSand a skeleton
+of local definitions as defined in 
+[common/Smallstep.v](DirectRefinement/common/Smallstep.v):
+```
+Record lts liA liB state: Type := {
+  genvtype: Type;
+  step : genvtype -> state -> trace -> state -> Prop;
+  valid_query: query liB -> bool;
+  initial_state: query liB -> state -> Prop;
+  at_external: state -> query liA -> Prop;
+  after_external: state -> reply liA -> state -> Prop;
+  final_state: state -> reply liB -> Prop;
+  globalenv: genvtype;
+}.
+
+Record semantics liA liB := {
+  skel: AST.program unit unit;
+  state: Type;
+  activate :> Genv.symtbl -> lts liA liB state;
+}.
+```
+#### Simulation Convention and CKLR
+
+The Kripke relation is defined in [coqrel/KLR.v](DirectRefinement/coqrel/KLR.v):
+```
+Definition klr W A B: Type :=
+  W -> rel A B.
+```
+
+The `simulation convention` between interfaces is also defined in [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v) with the C-level convention `cc_c`. The `match_senv` matches the global symbol tables of source and target semantics, which is elided in the paper for simplicity:
+```
+Record callconv {li1 li2} :=
+  mk_callconv {
+    ccworld : Type;
+    match_senv: ccworld -> Genv.symtbl -> Genv.symtbl -> Prop;
+    match_query: ccworld -> query li1 -> query li2 -> Prop;
+    match_reply: ccworld -> reply li1 -> reply li2 -> Prop;
+
+    ...
+  }.
+
+  Program Definition cc_c (R: cklr): callconv li_c li_c :=
+  {|
+    ccworld := world R;
+    match_senv := match_stbls R;
+    match_query := cc_c_query R;
+    match_reply := (<> cc_c_reply R)%klr;
+  |}.
+```
+
+Here `cklr` corresponds to the *Kripke Memory Relation* (Definition 2.1) mentioned in the paper (line 411). It is defined in [cklr/CKLR.v][cklr/CKLR.v](DirectRefinement/cklr/CKLR.v). Different memory relations
+ and their properties are in the [cklr](DirectRefinment/cklr) directory.
+
+The symbol `<>` in `match_reply` indicates that there exists an accessibility relation of worlds from queries to replies. See the discussion in line 395-407 of the paper.
+
+#### Open simulation
+The `open simulation` and the `vertical composition` are defined in [common/Smallstep.v](DirectRefinement/common/Smallstep.v):
+```
+  Record fsim_properties (L1: lts liA1 liB1 state1) (L2: lts liA2 liB2 state2) (index: Type)
+                       (order: index -> index -> Prop)
+                       (match_states: index -> state1 -> state2 -> Prop) : Prop := {
+    ...
+    fsim_match_initial_states:
+      forall q1 q2 s1, match_query ccB wB q1 q2 -> initial_state L1 q1 s1 ->
+      exists i, exists s2, initial_state L2 q2 s2 /\ match_states i s1 s2;
+    ...
+  }.
+
+  Record fsim_components {liA1 liA2} (ccA: callconv liA1 liA2) {liB1  liB2} ccB L1 L2 :=
+    Forward_simulation {
+    ...
+    fsim_skel:
+      skel L1 = skel L2;
+    fsim_lts se1 se2 wB:
+      @match_senv liB1 liB2 ccB wB se1 se2 ->
+      Genv.valid_for (skel L1) se1 ->
+      fsim_properties ccA ccB se1 se2 wB (activate L1 se1) (activate L2 se2)
+        fsim_index fsim_order (fsim_match_states se1 se2 wB);
+    ...
+  }.
+  Definition forward_simulation {liA1 liA2} ccA {liB1 liB2} ccB L1 L2 :=
+  inhabited (@fsim_components liA1 liA2 ccA liB1 liB2 ccB L1 L2).
+
+  Lemma compose_fsim_components:
+  fsim_components ccA12 ccB12 L1 L2 ->
+  fsim_components ccA23 ccB23 L2 L3 ->
+  fsim_components (ccA12 @ ccA23) (ccB12 @ ccB23) L1 L3.
+
+    
+```
+The horizontal composition is defined in [common/SmallstepLinking.v](DirectRefinement/common/SmallstepLinking.v):
+```
+Lemma compose_simulation {li1 li2} (cc: callconv li1 li2) L1a L1b L1 L2a L2b L2:
+  forward_simulation cc cc L1a L2a ->
+  forward_simulation cc cc L1b L2b ->
+  compose L1a L1b = Some L1 ->
+  compose L2a L2b = Some L2 ->
+  forward_simulation cc cc L1 L2.
+
+```
+You can refer the [CompCertO documentation page](DirectRefinement/doc/index.html) for further detailed description of CompCertO implementation.
 
 ### Direct Refinement 
 
-* `injp` transitivity
+#### `injp` and its transitivity
 
     The [definition](DirectRefinement/InjectFootprint.html#injp) and [transitivity](DirectRefinement/InjectFootprint.html#injp_injp_eq) of
 	`injp` are in [cklr/InjectFootprint.v](DirectRefinement/InjectFootprint.html). Note that the properties 
@@ -229,7 +342,7 @@ You can refer the [CompCertO documentation page](DirectRefinement/index.html) fo
 	[Mem.step2](DirectRefinement/Memory.html#Mem.step2) and [Mem.copy_sup](DirectRefinement/Memory.html#Mem.copy_sup) 
 	defined in [common/Memory.v](DirectRefinement/Memory.html).
 
-* Proofs of individual passes
+#### Proofs of individual passes
 
     For the passes using static analysis, we define the invariant [ro](DirectRefinement/ValueAnalysis.html#ro) in 
 	[backend/ValueAnalysis.v](DirectRefinement/ValueAnalysis.html). The proof which uses `injp` to guarantee the dynamic values of
@@ -242,7 +355,7 @@ You can refer the [CompCertO documentation page](DirectRefinement/index.html) fo
 	[backend/SimplLocalsproof.v](DirectRefinement/SimplLocalsproof.html#transf_program_correct') as an example to show that `injp` is a
 	reasonable guarantee condition to provide by the compilation passes. The proofs of remaining passes are unchanged from CompCertO.
 
-* Unification of the simulation conventions.
+#### Unification of the simulation conventions.
    
   The basic simulation convention between C and assembly [$\mathit{CA}$](DirectRefinement/CA.html#cc_c_asm) and [$\mathit{CAinjp}$](DirectRefinement/CA.html#cc_c_asm_injp)
   are defined in [driver/CA.v](DirectRefinement/CA.html). The proof of
@@ -257,32 +370,6 @@ You can refer the [CompCertO documentation page](DirectRefinement/index.html) fo
   actually "expanding" the [cc_compcert](DirectRefinement/Compiler.html#cc_compcert) step by step to satisty the requirement of all compilation
   passes. For examples, the lemmas [cc_expand](DirectRefinement/Compiler.html#cc_expand) and [cc_collapse](DirectRefinement/Compiler.html#cc_collapse) describe
   the main result of the incoming and outgoing side.
-
-### Examples of end-to-end verification
-
-* The Client-Server example:
-    The definitions of client and server can be found in [demo/Client.v](DirectRefinement/Client.html) and [demo/Server.v](DirectRefinement/Server.html). The C-level specification of the server is defined in
-    [demo/Serverspec.v](DirectRefinement/Serverspec.html), the refinement
-    between the server and its specification can be found in
-    [demo/Serverproof.v](DirectRefinement/Serverproof.html)
-    [TODO:two versions?]
-
-    + Top-level specification and its refinement proof (Lemma 5.3 in Section 5.2): [demo/ClientServerCspec.v](demo/ClientServerCspec.v)(unoptimized) and [demo/ClientServerCspec2.v](demo/ClientServerCspec2.v)(optimized)
-    + Final theorem (Theorem 5.7 in Section 5.2): [demo/ClientServer.v](demo/ClientServer.v)
-
-* The Mutual Sum example from CompCertM:
-
-    We take the mutual summation example from CompCertM to test our framework. The open modules $M_C$ and $M_A$ are defined in [demo/Demo.v](DirectRefinement/Demo.html). The definition of specification $L_A$ and its refinement with $M_A$ can be found in [demo/Demospec.v](DirectRefinement/Demospec.html) and [demo/Demoproof.v](DirectRefinement/Demoproof.html) The Top-level specification of composed semantics and the refinement proof are in [demo/DemoCspec.v](DirectRefinement/DemoCspec.html) and [demo/Demotopspec.v](DirectRefinement/Demotopspec.html).
-
-    The final theorem [topspec_correct] is also in [demo/Demotopspec.v](DirectRefinement/Demotopspec.html#topspec_correct).
-    Note that our verification result of this example is slightly different from CompCertM. We build an open simulation which can take arbitrary incoming memories while
-    CompCertM establish the RUSC relation (and behavior refinement) based on source-level module-local invariants about the memory.
-
-    
-* Client-Server with multiple mutual recursion:
-    + Definition of client: [demo/ClientMR.v](demo/ClientMR.v)
-    + Top-level specification and its refinement proof: [demo/ClientServerMRCSpec.v](demo/ClientServerMRCSpec.v)
-    + Final theorem: [demo/ClientServer.v](demo/ClientServer.v) -- [`spec_sim_mr`](demo/ClientServer.v#L202)
 
 ### Section 5: End-to-End Verification of Heterogenous Modules
 
