@@ -368,7 +368,7 @@ Inductive ro_acc : mem -> mem -> Prop :=
   ro_acc m1 m2.
                   
 ```
-These properties of memory accessibility is defined by vinilla CompCert in 
+These properties of memory accessibility is defined by vanilla CompCert in 
 [common/Events.v](DirectRefinement/common/Events.v) as `ec_readonly`, `ec_valid_block`
 and `ec_perm` for external calls. We use it as a preorder relation for both internal
 and external executions.
@@ -395,8 +395,18 @@ Record unchanged_on (m_before m_after: mem) : Prop := mk_unchanged_on {
 The proof of `injp` transivity in 
 [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v) is commented according
 to the appendix C of our [technical report](paper/technical-report.pdf).
-The construction of intermediate memory state (as discussed in the paper line 738-753)
-is performed as following steps. We first construct the injections and shape of `m2'`:
+The refinements (Lemma 3.1 and Lemma 3.2) correspond to the following lemmas:
+```
+Lemma injp_injp2:
+  subcklr (injp @ injp) injp.
+  
+Lemma injp_injp:
+  subcklr injp (injp @ injp).
+```
+
+Here we briefly persent the construction of intermediate memory state
+(as discussed in the paper line 738-753) as following steps. 
+We first construct the injections and shape of `m2'`:
 ```
 Fixpoint update_meminj12 (sd1': list block) (j1 j2 j': meminj) (si1: sup) :=
   match sd1' with
