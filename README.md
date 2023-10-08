@@ -15,6 +15,10 @@ Koenig and Zhong Shao
 For the claims made in our paper, please refer to the source files in the 
 [DirectRefinement](DirectRefinement) directory.
 
+The simulation convention C in Section 2.2 (line 450) of the paper corresponds to
+the definition [cc_c_asm_injp](DirectRefinement/driver/CA.v#L184) in the Coq file
+[driver/CA.v](DirectRefinement/driver/CA.v).
+
 Lemma 3.1 from Section3.2.1 (line 708) of the paper corresponds to the theorem
 [injp_injp2](DirectRefinement/cklr/InjectFootprint.v#L2481) in the Coq file
 [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v). Lemma 3.2 from
@@ -171,6 +175,7 @@ grep "Admitted" */*.v
 ```
 This instruction should return no result.
 
+
 [TODO: compare the Lines of code with CompCertOv3.10, change the table in TR according to 
 modification of the code]
 
@@ -324,6 +329,33 @@ Lemma compose_simulation {li1 li2} (cc: callconv li1 li2) L1a L1b L1 L2a L2b L2:
   forward_simulation cc cc L1 L2.
 
 ```
+The refinement of simulation conventions `ccref` and Theorem 2.4 from the Section 2.4 
+(line 580) are defined in 
+[common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v):
+```
+Definition ccref {li1 li2} (cc cc': callconv li1 li2) :=
+  forall w se1 se2 q1 q2,
+    match_senv cc w se1 se2 ->
+    match_query cc w q1 q2 ->
+    exists w',
+      match_senv cc' w' se1 se2 /\
+      match_query cc' w' q1 q2 /\
+      forall r1 r2,
+        match_reply cc' w' r1 r2 ->
+        match_reply cc w r1 r2.
+		
+Definition cceqv {li1 li2} (cc cc': callconv li1 li2) :=
+  ccref cc cc' /\ ccref cc' cc.
+
+Global Instance open_fsim_ccref:
+  Monotonic
+    (@forward_simulation)
+    (forallr - @ liA1, forallr - @ liA2, ccref ++>
+     forallr - @ liB1, forallr - @ liB2, ccref -->
+     subrel).
+```
+
+
 You can refer the [CompCertO documentation page](DirectRefinement/doc/index.html) for further detailed description of CompCertO implementation.
 
 ### `injp` and its transitivity (Section 3)
