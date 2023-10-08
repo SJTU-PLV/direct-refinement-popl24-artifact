@@ -11,15 +11,15 @@ The C or assembly code of `client.c`, `server.s` and `server_opt.s`
 are shown in Figure 3 in our paper.
 
 * `client.c` is defined in [demo/Client.v](demo/Client.v).
-* `server.s` and `server_opt.s` are defined in [demoServer.v](demo/Server.v).
+* `server.s` and `server_opt.s` are defined in [demo/Server.v](demo/Server.v).
 
 ### Refinement for the Hand-written Server (Section 5.1)
 
 * (Definition 5.1) The hand-written specification ($L_S$) for the
   optimized server (i.e., `server_opt.s`) is defined by `L2` in [demo/Serverspec.v](demo/Serverspec.v#L116). The hand-written specification (not
   discussed in the paper) for `server.s` is defined by `L1` in [demo/Serverspec.v](demo/Serverspec.v#L98).
-* (Theorem 5.2) It is defined by
-  `semantics_preservation_L2` in [demo/Serverproof.v](demo/Serverproof.v#L1581).
+* (Theorem 5.2) It corresponds to `semantics_preservation_L2` in
+  [demo/Serverproof.v](demo/Serverproof.v#L1581).
   ```
   Lemma semantics_preservation_L2:
     forward_simulation cc_compcert cc_compcert L2 (Asm.semantics b2).
@@ -27,7 +27,7 @@ are shown in Figure 3 in our paper.
   This proof is decomposed into
   [self_simulation_wt](demo/Serverproof.v#L1533) and
   [CAinjp_simulation_L2](demo/Serverproof.v#L1089) in the same file.
-  For `CAinjp_simulation_L2`, the simulation relation is defined by [match_state_c_asm](demo/Serverproof.v#42).
+  For the proof of `CAinjp_simulation_L2`, the simulation relation is defined by [match_state_c_asm](demo/Serverproof.v#42).
   
 
 
@@ -44,12 +44,18 @@ are shown in Figure 3 in our paper.
   the same theorem for unoptimized server, we define it in
   [top_simulation_L1](demo/ClientServerCspec.v#L136).
 
-* (Theorem 5.4) `compose_fsim_simulation` in [Smallstep.v](common/Smallstep.v#L896) and `asm_linking` in [AsmLinking.v](x86/AsmLinking.v#L371).
+* (Theorem 5.4) The theorem of horizontal composition corresponds to
+  `compose_simulation` in
+  [common/SmallstepLinking.v](common/SmallstepLinking.v#L338). The
+  adequacy theorem corresponds to `asm_linking` in
+  [x86/AsmLinking.v](x86/AsmLinking.v#L371).
   ```
-  Lemma compose_fsim_components:
-    fsim_components ccA12 ccB12 L1 L2 ->
-    fsim_components ccA23 ccB23 L2 L3 ->
-    fsim_components (ccA12 @ ccA23) (ccB12 @ ccB23) L1 L3.
+  Lemma compose_simulation {li1 li2} (cc: callconv li1 li2) L1a L1b L1 L2a L2b L2:
+    forward_simulation cc cc L1a L2a ->
+    forward_simulation cc cc L1b L2b ->
+    compose L1a L1b = Some L1 ->
+    compose L2a L2b = Some L2 ->
+    forward_simulation cc cc L1 L2.
   ```
   ```
   Lemma asm_linking:
@@ -57,9 +63,13 @@ are shown in Figure 3 in our paper.
     (SmallstepLinking.semantics L (erase_program p))
     (semantics p).
   ```
-* (Lemma 5.5) `compose_Client_Server_correct2` in [demo/ClientServer.v](demo/ClientServer.v#L42).
-* (Lemma 5.6) `ro_injp_cc_compcert` in [demo/ClientServer.v](demo/ClientServer.v#L76).
-* (Theorem 5.7) `spec_sim_2` in [ClientServer.v](demo/ClientServer.v#L146).
+* (Lemma 5.5) It corresponds to `compose_Client_Server_correct2` in [demo/ClientServer.v](demo/ClientServer.v#L42).
+* (Lemma 5.6) It corresponds to `ro_injp_cc_compcert` in [demo/ClientServer.v](demo/ClientServer.v#L76).
+  ```
+  Lemma ro_injp_cc_compcert:
+    cceqv cc_compcert (wt_c @ ro @ cc_c injp @ cc_compcert).
+  ```
+* (Theorem 5.7) It corresponds to `spec_sim_2` in [ClientServer.v](demo/ClientServer.v#L146).
   ```
   Theorem spec_sim_2 : forward_simulation cc_compcert cc_compcert top_spec2 (Asm.semantics tp2).
   ```
@@ -187,10 +197,43 @@ l1: Pmov 8(RSP) RBX
 ```
 
 The procedure of the refinement is shown below:
-* First, like what we do for the server in the above example, we define a high-level specification (called `L_A`) for `M_A`. The definition of `L_A` is in [Demospec.v](demo/Demospec.v) with the same name. The refinement $\texttt{L\_A} \leqslant_\mathbb{C} [\![\texttt{M\_A}]\!]$ is defined by `M_A_semantics_preservation` in [Demoproof](demo/Demoproof.v). The simulation relation of this proof is defined by `match_state_c_asm` in the same file.
-* Second, for `M_C`, we also define a specification `L_C` and show that $\texttt{L\_C} \leqslant_{\texttt{ro}\cdot\texttt{wt}\cdot \texttt{c}_{\texttt{injp}}}[\![\texttt{M\_C}]\!]$. `L_C` is defined by `L_C` in [DemoCspec.v](demo/DemoCspec.v) and the refinement is defined by `cspec_simulation`, `cspec_ro` and `cspec_self_simulation_wt` in [DemoCspec.v](demo/DemoCspec.v).
-* With the above definitions, we define a top-level specification called `top_spec` in [Demotopspec.v](demo/Demotopspec.v). We prove that $\texttt{top\_spec}  \leqslant_{\texttt{ro}\cdot\texttt{wt}\cdot \texttt{c}_{\texttt{injp}}} \texttt{L\_C} \oplus \texttt{L\_A}$ in [Demotopspec.v](demo/Demotopspec.v) by `top_simulation`, `top_ro` and `topspec_self_simulation_wt`.
-* Finally, with the above refinements and the correctness of CompCert(O), we show $\texttt{top\_spec} \leqslant_\mathbb{C} \texttt{CompCert}(\texttt{M\_C}) \oplus [\![\texttt{M\_A}]\!]$ in `topspec_correct` in [Demotopspec.v](demo/Demotopspec.v).
+* First, like what we do for the server in the above example, we define a high-level specification (called `L_A`) for `M_A`. The definition of `L_A` is in [demo/Demospec.v](demo/Demospec.v#L88) with the same name. The refinement is defined by `M_A_semantics_preservation` in [demo/Demoproof](demo/Demoproof.v). 
+  ```
+  Lemma M_A_semantics_preservation:
+  forward_simulation cc_compcert cc_compcert L_A (Asm.semantics M_A).
+  ```
+  The simulation relation of this proof is defined by [match_state_c_asm](demo/Demoproof.v#L44) in the same file.
+* Second, for `M_C`, we define its specification `L_C` in
+  [demo/DemoCspec.v](demo/DemoCspec.v#L90). Therefore, the refinement
+  between `L_C` and the semantics of `M_C` is defined by
+  [cspec_simulation](demo/DemoCspec.v#L423),
+  [cspec_ro](demo/DemoCspec.v#L901) and
+  [cspec_self_simulation_wt](demo/DemoCspec.v#L908).
+  ```
+  Lemma cspec_simulation:
+  forward_simulation (cc_c injp) (cc_c injp) L_C (Clight.semantics1 M_C).
+
+  Theorem cspec_ro :
+  forward_simulation ro ro L_C L_C.
+
+  Theorem cspec_self_simulation_wt :
+  forward_simulation wt_c wt_c L_C L_C.
+  ```
+
+* With the above definitions, we define a top-level specification
+  called `top_spec` in [demo/Demotopspec.v](demo/Demotopspec.v#L171).
+  The refinement between `top_spec` and the composition of `L_C` and
+  `L_A` corresponds to [top_simulation](demo/Demotopspec.v#L592),
+  [top_ro](demo/Demotopspec.v#L933) and
+  [topspec_self_simulation_wt](demo/Demotopspec.v#L940).
+* Finally, with the above refinements and the correctness of CompCert(O), we show the end-to-end refinement theorem in  `topspec_correct` in [Demotopspec.v](demo/Demotopspec.v#L1011).
+  ```
+  Theorem topspec_correct:
+    forall tp M_C',
+      transf_clight_program M_C = OK M_C' ->
+      link M_C' M_A = Some tp ->
+      forward_simulation cc_compcert cc_compcert top_spec (Asm.semantics tp).
+  ```
 
 ## Reference
 
