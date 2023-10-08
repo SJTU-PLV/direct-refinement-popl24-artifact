@@ -1811,7 +1811,7 @@ Proof.
   eapply Genv.genv_symb_range; eauto.
 Qed.
 
-(** Simplifed version of sound_memory_ro, we need
+(* Simplifed version of sound_memory_ro, we need
     1) ro_mem m1 -> sound_memory_ro m1
     2) ro_mem m1 -> ro_acc m1 m2 -> ro_mem m2 *)
 (*

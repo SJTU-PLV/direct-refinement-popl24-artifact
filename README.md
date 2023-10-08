@@ -274,7 +274,7 @@ Record callconv {li1 li2} :=
   |}.
 ```
 
-Here `cklr` corresponds to the *Kripke Memory Relation* (Definition 2.1) mentioned in the paper (line 411). It is defined in [cklr/CKLR.v][cklr/CKLR.v](DirectRefinement/cklr/CKLR.v). Different memory relations
+Here `cklr` corresponds to the *Kripke Memory Relation* (Definition 2.1) mentioned in the paper (line 411). It is defined in [cklr/CKLR.v](DirectRefinement/cklr/CKLR.v). Different memory relations
  and their properties are in the [cklr](DirectRefinment/cklr) directory.
 
 The symbol `<>` in `match_reply` indicates that there exists an accessibility relation of worlds from queries to replies. See the discussion in line 395-407 of the paper.
@@ -330,17 +330,121 @@ You can refer the [CompCertO documentation page](DirectRefinement/doc/index.html
 
 #### `injp` and its transitivity
 
-    The [definition](DirectRefinement/InjectFootprint.html#injp) and [transitivity](DirectRefinement/InjectFootprint.html#injp_injp_eq) of
-	`injp` are in [cklr/InjectFootprint.v](DirectRefinement/InjectFootprint.html). Note that the properties 
-	[Mem.ro_unchanged](DirectRefinement/Memory.html#Mem.ro_unchanged) and [injp_max_perm_decrease](DirectRefinement/InjectFootprint.html) 
-	in `injp_acc` are the same as the assumptions [ec_readonly](DirectRefinement/Event.html#ec_readonly) and
-	[ec_max_perm](DirectRefinement/Event.html#ec_max_perm) of external functions defined in original CompCert.
+The dinifition of `injp` (Definition 2.2, line 417) can be found in
+[cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v):
 
-    The proof of `injp` transitivity is commented according to the appendix C of our [technical report](popl24-technical-report.pdf).
-	We update the memory injections using [update_meminj12](DirectRefinement/InjectFootprint.html#update_meminj12) and construct
-	the intermediate memory state [m2'](DirectRefinement/InjectFootprint.html#m2') using the memory operations 
-	[Mem.step2](DirectRefinement/Memory.html#Mem.step2) and [Mem.copy_sup](DirectRefinement/Memory.html#Mem.copy_sup) 
-	defined in [common/Memory.v](DirectRefinement/Memory.html).
+```
+
+Program Definition injp: cklr :=
+  {|
+    world := injp_world;
+    wacc := injp_acc;
+    mi := injp_mi;
+    match_mem := injp_match_mem;
+    match_stbls := injp_match_stbls;
+  |}.
+  
+Inductive injp_acc: relation injp_world :=
+  injp_acc_intro f m1 m2 Hm f' m1' m2' Hm':
+    Mem.ro_unchanged m1 m1' -> Mem.ro_unchanged m2 m2' ->
+    injp_max_perm_decrease m1 m1' ->
+    injp_max_perm_decrease m2 m2' ->
+    Mem.unchanged_on (loc_unmapped f) m1 m1' ->
+    Mem.unchanged_on (loc_out_of_reach f m1) m2 m2' ->
+    inject_incr f f' ->
+    inject_separated f f' m1 m2 ->
+    injp_acc (injpw f m1 m2 Hm) (injpw f' m1' m2' Hm').
+  
+```
+
+Note that `mem-acc m1 m1'` mentioned in the paper (ling 422) corresponds to the 
+`ro_acc` defined in [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
+```
+Inductive ro_acc : mem -> mem -> Prop :=
+| ro_acc_intro m1 m2:
+  Mem.ro_unchanged m1 m2 ->
+  Mem.sup_include (Mem.support m1) (Mem.support m2) ->
+  injp_max_perm_decrease m1 m2 ->
+  ro_acc m1 m2.
+                  
+```
+These properties of memory accessibility is defined by vinilla CompCert in 
+[common/Events.v](DirectRefinement/common/Events.v) as `ec_readonly`, `ec_valid_block`
+and `ec_perm` for external calls. We use it as a preorder relation for both internal
+and external executions.
+`Mem_sup_include (Mem.support m1) (Mem.support m2)` means that `m2` have more
+valid blocks than `m1`. It is included in `Mem.unchanged_on P m1 m2` which is defined
+in [common/Memory.v](DirectRefinement/common/Memory.v):
+```
+Record unchanged_on (m_before m_after: mem) : Prop := mk_unchanged_on {
+  unchanged_on_support:
+    sup_include (support m_before) (support m_after);
+  unchanged_on_perm:
+    forall b ofs k p,
+    P b ofs -> valid_block m_before b ->
+    (perm m_before b ofs k p <-> perm m_after b ofs k p);
+  unchanged_on_contents:
+    forall b ofs,
+    P b ofs -> perm m_before b ofs Cur Readable ->
+    ZMap.get ofs (NMap.get _ b m_after.(mem_contents)) =
+    ZMap.get ofs (NMap.get _ b m_before.(mem_contents))
+}.
+
+```
+
+The proof of `injp` transivity in 
+[cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v) is commented according
+to the appendix C of our [technical report](paper/technical-report.pdf).
+The construction of intermediate memory state (as discussed in the paper line 738-753)
+is performed as following steps. We first construct the injections and shape of `m2'`:
+```
+Fixpoint update_meminj12 (sd1': list block) (j1 j2 j': meminj) (si1: sup) :=
+  match sd1' with
+    |nil => (j1,j2,si1)
+    |hd::tl =>
+       match compose_meminj j1 j2 hd, (j' hd) with
+       | None , Some (b2,ofs) =>
+         let b0 := fresh_block si1 in
+         update_meminj12 tl (meminj_add j1 hd (b0,0) )
+                         (meminj_add j2 (fresh_block si1) (b2,ofs))
+                         j' (sup_incr si1)
+       | _,_ => update_meminj12 tl j1 j2 j' si1
+       end
+  end.
+```
+
+We then copy the values and permissions for newly allocated blocks as:
+
+```
+Definition m2'1 := Mem.step2 m1 m2 m1' s2' j1'.
+```
+Finally we update the values and permissions for old blocks according whether they
+are protected or read-only using:
+
+```
+Definition m2' := Mem.copy_sup m1 m2 m1' j1 j2 j1' INJ12 (Mem.support m2) m2'1.
+```
+
+These memory operations are defined in [common/Memory.v](DirectRefinement/common/Memory.v).
+For these operations, we changed the type of `mem_access` to be the same structure as
+`mem_contents` in order to enumerate the valid (with nonempty permissions)
+locations of a memory block.
+```
+# Our implementation
+Record mem' : Type := mkmem {
+  mem_contents: NMap.t (ZMap.t memval);
+  mem_access: NMap.t (ZMap.t memperm);
+  ...
+}
+
+# CompCertO v3.10
+Record mem' : Type := mkmem {
+  mem_contents: NMap.t (ZMap.t memval);
+  mem_access: NMap.t (Z -> perm_kind -> option permission);
+  ... 
+}
+
+```
 
 #### Proofs of individual passes
 
