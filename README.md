@@ -200,16 +200,16 @@ work in the other directory.
 
 ### Navigating the proofs
 
-After that, you can navigate the source code by using emacs. For example, running
+After that, you can navigate the source code by using [emacs](https://www.gnu.org/software/emacs/).
+For example, running
 
 ```
 emacs cklr/InjectFootprint.v
 ```
 
-opens the emacs window in proof-general mode for browsing the file
-`cklr/InjectFootprint.v`. The commands for navigating the Coq proof
-scripts can be found at 
-[here](https://proofgeneral.github.io/doc/master/userman/Introducing-Proof-General/).
+opens the emacs window in 
+[proof-general](https://proofgeneral.github.io/doc/master/userman/Introducing-Proof-General/) 
+mode for browsing the file `cklr/InjectFootprint.v`. 
 
 You can also compile the source code into html files for better
 presentation. Simply run the following command (which needs
@@ -233,15 +233,17 @@ make
 sudo make install
 ```
 
-## Evaluation instructions
+## Evaluation of soundness and proof effort
 
+### Soundness 
 To check soundness of this artifact, enter `DirectRefinement` and run
 ```
 grep "Admitted" */*.v
 ```
 This instruction should return no result.
 
-### Table 3
+### Proof effort
+
 The following are the instructions for reproducing the lines of code (LOC) in 
 Table 3 (line 2255) of the [technical report](paper/technical-report.pdf).
 
