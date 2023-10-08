@@ -182,7 +182,7 @@ Table 3 (line 2255) of the [technical report](paper/technical-report.pdf).
 #### Column 2
 
 The results in the second column can be produced by running the following
-command in directories `CompCertOv3.10` and adding the numbers in the `spec` and
+command in directory `CompCertOv3.10` and adding the numbers in the `spec` and
 `proof` for each file.
 
 ```
@@ -191,13 +191,12 @@ coqwc lib/Maps.v common/Memory.v cklr/InjectFootprint.v cfrontend/SimplLocalspro
 
 The last row of result should be 
 ```
- // CompCertOv3.10
- 6054     9871     1357 total // 15925
+ 6054     9871     1357 total #15925
 ```
 
 #### Column 3
 
-The numbers in Column 3 can be obtained in a similar way. Run the following commands 
+The numbers in Column 3 can be obtained in a similar way. Run the following command 
 in `DirectRefinement` for the results except for the examples:
 ```
 coqwc lib/Maps.v common/Memory.v cklr/InjectFootprint.v cfrontend/SimplLocalsproof.v backend/ValueAnalysis.v backend/Deadcodeproof.v backend/Constpropproof.v backend/CSEproof.v backend/Unusedglobproof.v driver/CA.v driver/CallConv.v driver/Compiler.v
@@ -229,7 +228,7 @@ and add the `spec` and `proof` of the last row.
 Finally we get `23838 + 7327 + 3128 = 34293` for the number in row `Total`.
 
 #### Column 4
-The numbers in `Additions(+)` column is the submission of column 3 and colume 2.
+The numbers in `Additions(+)` column is the result of subtracting column 2 from colume 3.
 
 ## Additional artifact description
 
