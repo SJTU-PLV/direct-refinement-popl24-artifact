@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CompCertO
 
 A version of CompCert featuring an open module semantics, designed to
@@ -93,22 +92,3 @@ After running `make documentation` you will be able to browse the
 generated [documentation](doc/index.html). We have annotated the
 index file to highlight the changes and additions made in CompCertO.
 
-The remainder of this document is the original `README.md` distributed
-with CompCert v3.6.
-
----
-
-# CompCert
-The formally-verified C compiler.
-=======
-# Nominal CompCert
->>>>>>> 830b2cc
-
-## Overview
-We replaced the "nextblock" design in CompCert by "support and freshness" which comes from Nominal Technique.
-
-This version uses Module Type to describe the necessary properties (definitions and theorems) of "block" and "sup" Type for the original compilation pass. 
-
-We have repaired the whole proof using "Declare Module sup:SUP (block:BLOCK)". We have also made the compiler available using "positive" and "positive list" to realize "block" and "sup". While the code is the same except the definition of these two Modules. 
-
-We optimistically believe that we can design different "block" and "sup" types which satisfy our signature to carry more information and improve/extend the original CompCert without breaking the proves we do not concern.
