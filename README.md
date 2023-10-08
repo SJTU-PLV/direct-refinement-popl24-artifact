@@ -179,7 +179,8 @@ following commands:
 ```
 git clone https://github.com/xavierleroy/coq2html.git
 cd coq2html
-make & sudo make install
+make
+sudo make install
 ```
 
 ## Evaluation instructions
