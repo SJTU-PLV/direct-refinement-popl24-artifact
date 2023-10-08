@@ -26,7 +26,7 @@ Section3.2.2 (line 763) corresponds to the theorem
 [injp_injp](DirectRefinement/cklr/InjectFootprint.v#L472) in the same file.
 
 Lemma 4.1 from Section 4.1.2 (line 861) corresponds to the theorem 
-[transf_program_correct](DirectRefinement/backend/Constpropproof.v#1097) in the
+[transf_program_correct](DirectRefinement/backend/Constpropproof.v#L1097) in the
 Coq file [backend/Constpropproof.v](DirectRefinement/backend/Constpropproof.v).
 
 Definition 4.2 from Section 4.1.2 (line 874) can be found in
@@ -43,7 +43,7 @@ For Lemma 4.4 from Section 4.2.2 (line 929), the properties
 [(2)](DirectRefinement/cklr/InjectFootprint.v#L2560)
 [(3)](DirectRefinement/cklr/InjectFootprint.v#L2606) can be found in
 [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v), property 
-[(4)](DirectRefinement/cklr/InjectFootprint.v#L500) can be found in 
+[(4)](DirectRefinement/cklr/Inject.v#L500) can be found in 
 [cklr/Inject.v](DirectRefinement/cklr/Inject.v) and properties 
 [(5)](DirectRefinement/cklr/Extends.v#L261) 
 [(6)](DirectRefinement/cklr/Extends.v#L290) 
@@ -61,7 +61,7 @@ Lemma 4.7 (line 956) is an instantiation of theorems
 [common/Invariant.v](DirectRefinement/common/Invariant.v).
 
 Theorem 4.8 from Section 4.3 (line 963) corresponds to the final theorems
-in [cklr/Clightrel.v](DirectRefinement/cklr/Clightrel.v#762), 
+in [cklr/Clightrel.v](DirectRefinement/cklr/Clightrel.v#L762), 
 [cklr/RTLrel.v](DirectRefinement/cklr/RTLrel.v#L271) and 
 [x86/Asmrel.v](DirectRefinement/x86/Asmrel.v#L513).
 The direct refinement convention (line 973) is defined as 
@@ -73,7 +73,7 @@ Theorem 4.9 (line 977) corresponds to the theorem
 Definition 5.1 from Section 5.1 (line 1028) is defined in Coq file 
 [demo/Serverspec.v](DirectRefinement/demo/Serverspec.v). Theorem 5.2 (line 1058)
 corresponds to the theorem 
-[semantics_preservation_L2](DirectRefinement/demo/Serverproof.v#L1576) in 
+[semantics_preservation_L2](DirectRefinement/demo/Serverproof.v#L1581) in 
 [demo/Serverproof.v](DirectRefinement/demo/Serverproof.v).
 
 Lemma 5.3 from Section 5.2 (line 1087) is defined is the vertical composition of theorems
@@ -83,13 +83,13 @@ Lemma 5.3 from Section 5.2 (line 1087) is defined is the vertical composition of
 [demo/ClientServercspec2.v](DirectRefinement/demo/ClientServercspec2.v).
 
 Theorem 5.4 (line 1097) corresponds to the lemma 
-[asm_linking](DirectRefinement/x86/Asmlinking.v#L371) in 
-[x86/Asmlinking.v](DirectRefinement/x86/Asmlinking.v).
+[asm_linking](DirectRefinement/x86/AsmLinking.v#L371) in 
+[x86/AsmLinking.v](DirectRefinement/x86/AsmLinking.v).
 
 Lemma 5.5 (line 1101), Lemma 5.6 (line 1107) and Theorem 5.7 (line 1111) correspond to
 the theorems [compose_Client_Server_correct2](DirectRefinement/demo/ClientServer.v#L42),
 [ro_injp_cc_compcert](DirectRefinement/demo/ClientServer.v#L76) and
-[spec_sim_2](DirectRefinement/demo/ClientServer.v#146) in the Coq file 
+[spec_sim_2](DirectRefinement/demo/ClientServer.v#L146) in the Coq file 
 [demo/ClientServer.v](DirectRefinement/demo/ClientServer.v).
 
 ## Installation
