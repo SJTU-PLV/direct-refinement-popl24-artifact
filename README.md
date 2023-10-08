@@ -298,14 +298,17 @@ Finally we get `23838 + 7327 + 3128 = 34293` for the number in row `Total`.
 #### Column 4
 The numbers in `Additions(+)` column is the result of subtracting column 2 from colume 3.
 
-## Additional artifact description
+## Structure of formal proofs
 
 This artifact is based on CompCertO v3.10, you can browse the structure and
 source code of original CompCert [here](http://compcert.inria.fr/doc/index.html).
 Note that we use nominal memory model from Nominal CompCert[^1] in our implementation
 for future extensions, while our result does not rely on it.
 
-We briefly present the framework of CompCertO as described in Section 2.1. We then demonstrate the key definitions and theorems for building direct refinement (Section 3 and 4). Finally we discuss the examples of end-to-end verification using direct refinement (Section 5).
+We demonstrate the formal proofs following the structure of our paper.
+We first briefly present the background from CompCertO as described in Section 2.1.
+We then demonstrate the key definitions and theorems for building direct refinement (Section 3 and 4).
+Finally we discuss the examples of end-to-end verification using direct refinement (Section 5).
 
 For CompCert's block-based memory model (Section 2.1.1), see 
 [common/Values.v](DirectRefinement/common/Values.v) and
@@ -314,7 +317,10 @@ For CompCert's block-based memory model (Section 2.1.1), see
 ### CompCertO
 
 #### Open semantics 
-The `language interface` is defined in [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v) together with the C level interface `li_c`:
+
+- The *language interface* is defined in 
+[common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v).
+
 ```
 Structure language_interface :=
   mk_language_interface {
@@ -323,72 +329,36 @@ Structure language_interface :=
     entry: query -> val;
   }.
 
-
-Record c_query :=
-  cq {
-    cq_vf: val;
-    cq_sg: signature;
-    cq_args: list val;
-    cq_mem: mem;
-  }.
-
-Record c_reply :=
-  cr {
-    cr_retval: val;
-    cr_mem: mem;
-  }.
-
-Canonical Structure li_c :=
-  {|
-    query := c_query;
-    reply := c_reply;
-    entry := cq_vf;
-  |}.
-
 ```
+- The interfaces of C and Asm (line 363-364) are defined as `li_c` in
+[common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v) and
+`li_asm` in [x86/Asm.v](DirectRefinement/x86/Asm.v).
 
-`Open semantics` is essentially a mapping from global 
-symbol table to open LTS and a skeleton
-of local definitions as defined in 
-[common/Smallstep.v](DirectRefinement/common/Smallstep.v):
-```
-Record lts liA liB state: Type := {
-  genvtype: Type;
-  step : genvtype -> state -> trace -> state -> Prop;
-  valid_query: query liB -> bool;
-  initial_state: query liB -> state -> Prop;
-  at_external: state -> query liA -> Prop;
-  after_external: state -> reply liA -> state -> Prop;
-  final_state: state -> reply liB -> Prop;
-  globalenv: genvtype;
-}.
+- *Open semantics* corresponds to `semantics` in
+[common/Smallstep.v](DirectRefinement/common/Smallstep.v),
+The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 
-Record semantics liA liB := {
-  skel: AST.program unit unit;
-  state: Type;
-  activate :> Genv.symtbl -> lts liA liB state;
-}.
-```
-#### Simulation Convention and CKLR
+#### Open simulation
 
-The Kripke relation is defined in [coqrel/KLR.v](DirectRefinement/coqrel/KLR.v):
-```
-Definition klr W A B: Type :=
-  W -> rel A B.
-```
+- The *simulation convention* between interfaces is defined as `callconv` in 
+[common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v).
 
-The `simulation convention` between interfaces is also defined in [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v) with the C-level convention `cc_c`. The `match_senv` matches the global symbol tables of source and target semantics, which is elided in the paper for simplicity:
-```
-Record callconv {li1 li2} :=
-  mk_callconv {
-    ccworld : Type;
-    match_senv: ccworld -> Genv.symtbl -> Genv.symtbl -> Prop;
-    match_query: ccworld -> query li1 -> query li2 -> Prop;
-    match_reply: ccworld -> reply li1 -> reply li2 -> Prop;
 
-    ...
-  }.
+- The *open simulation* is defined as `forward_simulation` in 
+  [common/Smallstep.v](DirectRefinement/common/Smallstep.v). The core of it
+  is `fsim_properties` which corresponds to Figure 5 (line 344) in the paper.
 
+#### Kripke Memory Relations
+
+- (Definition 2.1, line 411) *Kripke Memory Relation* is defined as `cklr` in 
+  [cklr/CKLR.v](DirectRefinement/cklr/CKLR.v). Different memory relations
+  and their properties are in the [cklr](DirectRefinment/cklr) directory.
+
+- For the *world accessibility* (line 395-407), see the C-level simulation convention
+  `cc_c` parameterized over memory relation `R` defined in
+  [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v)
+  :
+  ```
   Program Definition cc_c (R: cklr): callconv li_c li_c :=
   {|
     ccworld := world R;
@@ -396,151 +366,83 @@ Record callconv {li1 li2} :=
     match_query := cc_c_query R;
     match_reply := (<> cc_c_reply R)%klr;
   |}.
-```
-
-Here `cklr` corresponds to the *Kripke Memory Relation* (Definition 2.1) mentioned in the paper (line 411). It is defined in [cklr/CKLR.v](DirectRefinement/cklr/CKLR.v). Different memory relations
- and their properties are in the [cklr](DirectRefinment/cklr) directory.
-
-The symbol `<>` in `match_reply` indicates that there exists an accessibility relation of worlds from queries to replies. See the discussion in line 395-407 of the paper.
-
-#### Open simulation
-The `open simulation` and the `vertical composition` are defined in [common/Smallstep.v](DirectRefinement/common/Smallstep.v):
-```
-  Record fsim_properties (L1: lts liA1 liB1 state1) (L2: lts liA2 liB2 state2) (index: Type)
-                       (order: index -> index -> Prop)
-                       (match_states: index -> state1 -> state2 -> Prop) : Prop := {
-    ...
-    fsim_match_initial_states:
-      forall q1 q2 s1, match_query ccB wB q1 q2 -> initial_state L1 q1 s1 ->
-      exists i, exists s2, initial_state L2 q2 s2 /\ match_states i s1 s2;
-    ...
-  }.
-
-  Record fsim_components {liA1 liA2} (ccA: callconv liA1 liA2) {liB1  liB2} ccB L1 L2 :=
-    Forward_simulation {
-    ...
-    fsim_skel:
-      skel L1 = skel L2;
-    fsim_lts se1 se2 wB:
-      @match_senv liB1 liB2 ccB wB se1 se2 ->
-      Genv.valid_for (skel L1) se1 ->
-      fsim_properties ccA ccB se1 se2 wB (activate L1 se1) (activate L2 se2)
-        fsim_index fsim_order (fsim_match_states se1 se2 wB);
-    ...
-  }.
-  Definition forward_simulation {liA1 liA2} ccA {liB1 liB2} ccB L1 L2 :=
-  inhabited (@fsim_components liA1 liA2 ccA liB1 liB2 ccB L1 L2).
-
-  Lemma compose_fsim_components:
-  fsim_components ccA12 ccB12 L1 L2 ->
-  fsim_components ccA23 ccB23 L2 L3 ->
-  fsim_components (ccA12 @ ccA23) (ccB12 @ ccB23) L1 L3.
-
-    
-```
-The horizontal composition is defined in [common/SmallstepLinking.v](DirectRefinement/common/SmallstepLinking.v):
-```
-Lemma compose_simulation {li1 li2} (cc: callconv li1 li2) L1a L1b L1 L2a L2b L2:
-  forward_simulation cc cc L1a L2a ->
-  forward_simulation cc cc L1b L2b ->
-  compose L1a L1b = Some L1 ->
-  compose L2a L2b = Some L2 ->
-  forward_simulation cc cc L1 L2.
-
-```
-The refinement of simulation conventions `ccref` and Theorem 2.4 from the Section 2.4 
-(line 580) are defined in 
-[common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v):
-```
-Definition ccref {li1 li2} (cc cc': callconv li1 li2) :=
-  forall w se1 se2 q1 q2,
-    match_senv cc w se1 se2 ->
-    match_query cc w q1 q2 ->
-    exists w',
-      match_senv cc' w' se1 se2 /\
-      match_query cc' w' q1 q2 /\
-      forall r1 r2,
-        match_reply cc' w' r1 r2 ->
-        match_reply cc w r1 r2.
-		
-Definition cceqv {li1 li2} (cc cc': callconv li1 li2) :=
-  ccref cc cc' /\ ccref cc' cc.
-
-Global Instance open_fsim_ccref:
-  Monotonic
-    (@forward_simulation)
-    (forallr - @ liA1, forallr - @ liA2, ccref ++>
-     forallr - @ liB1, forallr - @ liB2, ccref -->
-     subrel).
-```
+  ```
+  If we use the same world `w` for `match_query` and `match_reply`, the symbol `<>` in
+  `match_reply` indicates that there exists an accessibility relation of worlds from 
+  queries to replies.
 
 
-You can refer the [CompCertO documentation page](DirectRefinement/doc/index.html) for further detailed description of CompCertO implementation.
+#### Vertical Composition of simulations
 
-### `injp` and its transitivity (Section 3)
-
-The dinifition of `injp` (Definition 2.2, line 417) can be found in
-[cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v):
-
-```
-
-Program Definition injp: cklr :=
-  {|
-    world := injp_world;
-    wacc := injp_acc;
-    mi := injp_mi;
-    match_mem := injp_match_mem;
-    match_stbls := injp_match_stbls;
-  |}.
+- Theorem 2.3 from Section 2.4 (line 557) corrsponds to the theorem `compose_forward_simulations`
+  in the Coq file [common/Smallstep.v](DirectRefinement/common/Smallstep.v).
   
-Inductive injp_acc: relation injp_world :=
-  injp_acc_intro f m1 m2 Hm f' m1' m2' Hm':
-    Mem.ro_unchanged m1 m1' -> Mem.ro_unchanged m2 m2' ->
-    injp_max_perm_decrease m1 m1' ->
-    injp_max_perm_decrease m2 m2' ->
-    Mem.unchanged_on (loc_unmapped f) m1 m1' ->
-    Mem.unchanged_on (loc_out_of_reach f m1) m2 m2' ->
-    inject_incr f f' ->
-    inject_separated f f' m1 m2 ->
-    injp_acc (injpw f m1 m2 Hm) (injpw f' m1' m2' Hm').
+- The composition of simulation conventions (line 561) is defined as `cc_compose` in
+  [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v).
   
-```
+#### Refinement of calling conventions
 
-Note that `mem-acc m1 m1'` mentioned in the paper (ling 422) corresponds to the 
-`ro_acc` defined in [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
-```
-Inductive ro_acc : mem -> mem -> Prop :=
-| ro_acc_intro m1 m2:
-  Mem.ro_unchanged m1 m2 ->
-  Mem.sup_include (Mem.support m1) (Mem.support m2) ->
-  injp_max_perm_decrease m1 m2 ->
-  ro_acc m1 m2.
-                  
-```
-These properties of memory accessibility is defined by vanilla CompCert in 
-[common/Events.v](DirectRefinement/common/Events.v) as `ec_readonly`, `ec_valid_block`
-and `ec_perm` for external calls. We use it as a preorder relation for both internal
-and external executions.
-`Mem_sup_include (Mem.support m1) (Mem.support m2)` means that `m2` have more
-valid blocks than `m1`. It is included in `Mem.unchanged_on P m1 m2` which is defined
-in [common/Memory.v](DirectRefinement/common/Memory.v):
-```
-Record unchanged_on (m_before m_after: mem) : Prop := mk_unchanged_on {
-  unchanged_on_support:
-    sup_include (support m_before) (support m_after);
-  unchanged_on_perm:
-    forall b ofs k p,
-    P b ofs -> valid_block m_before b ->
-    (perm m_before b ofs k p <-> perm m_after b ofs k p);
-  unchanged_on_contents:
-    forall b ofs,
-    P b ofs -> perm m_before b ofs Cur Readable ->
-    ZMap.get ofs (NMap.get _ b m_after.(mem_contents)) =
-    ZMap.get ofs (NMap.get _ b m_before.(mem_contents))
-}.
+-  The refinement of simulation conventions (line 571-572) is defined as `ccref` 
+   in [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v). The equivalence
+   is defined as `cceqv` in the same file.
 
-```
+-  Theorem 2.4 (line 580) is defined as `open_fsim_ccref` in 
+   [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
 
+#### Kripke Relation with Memory Protection (`injp`)
+
+- (Definition 2.2, line 417) The definition of `injp` can be found in 
+  [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v):
+
+	```
+	Program Definition injp: cklr :=
+    {|
+      world := injp_world;
+      wacc := injp_acc;
+      mi := injp_mi;
+      match_mem := injp_match_mem;
+      match_stbls := injp_match_stbls;
+    |}.
+	```
+
+- The `injp` accessibility is defined as `injp_acc` in the same file:
+	```
+    Inductive injp_acc: relation injp_world :=
+      injp_acc_intro f m1 m2 Hm f' m1' m2' Hm':
+        Mem.ro_unchanged m1 m1' -> Mem.ro_unchanged m2 m2' ->
+		injp_max_perm_decrease m1 m1' ->
+		injp_max_perm_decrease m2 m2' ->
+		Mem.unchanged_on (loc_unmapped f) m1 m1' ->
+		Mem.unchanged_on (loc_out_of_reach f m1) m2 m2' ->
+		inject_incr f f' ->
+		inject_separated f f' m1 m2 ->
+		injp_acc (injpw f m1 m2 Hm) (injpw f' m1' m2' Hm').
+
+	```
+	Note that *mem-acc(m,m')* mentioned in the paper (ling 422) is summerized as definition
+	`ro_acc` defined in [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
+   ```
+   Inductive ro_acc : mem -> mem -> Prop :=
+   | ro_acc_intro m1 m2:
+      Mem.ro_unchanged m1 m2 -> (*ec_readonly*)
+      Mem.sup_include (Mem.support m1) (Mem.support m2) -> (*ec_valid_block*)
+      injp_max_perm_decrease m1 m2 -> (*ec_perm*)
+	  ro_acc m1 m2.
+  ```
+  These properties of memory accessibility is defined by vanilla CompCert in 
+  [common/Events.v](DirectRefinement/common/Events.v) as `ec_readonly`, `ec_valid_block`
+  and `ec_perm` for external calls. We use it as a preorder relation for both internal
+  and external executions.
+  
+  The *unchanged-on* (line 424) is defined using `unchanged_on` in
+  [common/Memory.v](DirectRefinement/common/Memory.v).
+  Note that `Mem_sup_include (Mem.support m1) (Mem.support m2)` which means that
+  `m2` have more valid blocks than `m1` is included in 
+  `Mem.unchanged_on P m1 m2`. Therefore all three properties of `ro_acc m1 m1'` are
+  included in `injp_acc` as we defined in the paper.
+
+
+### `injp` transitivity (Section 3)
 The proof of `injp` transivity in 
 [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v) is commented according
 to the appendix C of our [technical report](paper/technical-report.pdf).
