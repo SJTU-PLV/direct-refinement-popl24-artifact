@@ -318,8 +318,8 @@ For CompCert's block-based memory model (Section 2.1.1), see
 
 #### Open semantics 
 
-- The *language interface* is defined in 
-[common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v).
+- The *language interface* (line 358) is defined in 
+[common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v):
 
 ```
 Structure language_interface :=
@@ -328,7 +328,6 @@ Structure language_interface :=
     reply: Type;
     entry: query -> val;
   }.
-
 ```
 - The interfaces of C and Asm (line 363-364) are defined as `li_c` in
 [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v) and
@@ -355,8 +354,9 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
   and their properties are in the [cklr](DirectRefinment/cklr) directory.
 
 - For the *world accessibility* (line 395-407), see the C-level simulation convention
-  `cc_c` parameterized over memory relation `R` defined in
-  [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v)
+  `cc_c`  defined in [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v)
+  as an example. It defines the simulation convention between C interfaces
+  parameterized over memory relation `R` as:
   :
   ```
   Program Definition cc_c (R: cklr): callconv li_c li_c :=
@@ -369,12 +369,13 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
   ```
   If we use the same world `w` for `match_query` and `match_reply`, the symbol `<>` in
   `match_reply` indicates that there exists an accessibility relation of worlds from 
-  queries to replies.
+  queries to replies. `<>` is the notation of `klr_diam` in 
+  [coqrel/KLR.v](DirectRefinement/coqrel/KLR.v)
 
 
 #### Vertical Composition of simulations
 
-- Theorem 2.3 from Section 2.4 (line 557) corrsponds to the theorem `compose_forward_simulations`
+- Theorem 2.3 from Section 2.4 (line 557) corresponds to the theorem `compose_forward_simulations`
   in the Coq file [common/Smallstep.v](DirectRefinement/common/Smallstep.v).
   
 - The composition of simulation conventions (line 561) is defined as `cc_compose` in
@@ -417,10 +418,9 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 		inject_incr f f' ->
 		inject_separated f f' m1 m2 ->
 		injp_acc (injpw f m1 m2 Hm) (injpw f' m1' m2' Hm').
-
 	```
-	Note that *mem-acc(m,m')* mentioned in the paper (ling 422) is summerized as definition
-	`ro_acc` defined in [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
+	Note that *mem-acc(m,m')* mentioned in the paper (line 422) is summerized as definition
+	`ro_acc` in [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
    ```
    Inductive ro_acc : mem -> mem -> Prop :=
    | ro_acc_intro m1 m2:
@@ -429,12 +429,12 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
       injp_max_perm_decrease m1 m2 -> (*ec_perm*)
 	  ro_acc m1 m2.
   ```
-  These properties of memory accessibility is defined by vanilla CompCert in 
+  These properties of are defined by vanilla CompCert in 
   [common/Events.v](DirectRefinement/common/Events.v) as `ec_readonly`, `ec_valid_block`
-  and `ec_perm` for external calls. We use it as a preorder relation for both internal
-  and external executions.
+  and `ec_perm` for external calls. We use them together as a
+  preorder relation for memory transformation during both internal and external executions.
   
-  The *unchanged-on* (line 424) is defined using `unchanged_on` in
+  The *unchanged-on* (line 424) is defined as `unchanged_on` in
   [common/Memory.v](DirectRefinement/common/Memory.v).
   Note that `Mem_sup_include (Mem.support m1) (Mem.support m2)` which means that
   `m2` have more valid blocks than `m1` is included in 
