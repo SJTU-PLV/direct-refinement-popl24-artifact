@@ -1783,10 +1783,10 @@ Proof. split. eapply trans_injp_ro_outgoing. eapply trans_injp_inv_incoming. Qed
 (** ** Properties for the Deadcode pass *)
 (** The [match_state] relation for Deadcode uses [magree] instead of [Mem.inject].
     As a result, proving injp for the incoming side is relatively complicated.
-    We prove ro ⋅ injp ->> ro ⋅ inj and turns it to ro ⋅ injp -> ro ⋅ injp with the help
-    of self-simulations using ro and injp at RTL level and following refinement.
+    We prove ro ⋅ injp ->> ro ⋅ inj and turns it to ro ⋅ injp ->> ro ⋅ injp with the help
+    of self-simulations using ro and injp at RTL level. Specifically,
 
-    ro ⋅ injp ⊑ ro ⋅ injp ⋅ ro ⋅ injp ⋅ injp  --> ro ⋅ injp ⋅ ro ⋅ inj ⋅ injp ⊑ ro ⋅ injp
+    ro ⋅ injp ⊑ ro ⋅ injp ⋅ (ro ⋅ injp) ⋅ injp  --> ro ⋅ injp ⋅ (ro ⋅ inj) ⋅ injp ⊑ ro ⋅ injp
 
     Outgoing side is trivial from ro ⋅ injp ⊑ ro ⋅ injp ⋅ ro ⋅ injp.
     Incoming side is proved using the same pattern as injp ⋅ inj ⋅ injp ⊑ injp.
