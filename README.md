@@ -450,37 +450,28 @@ The refinements (Lemma 3.1 and Lemma 3.2) correspond to the following lemmas:
 ```
 Lemma injp_injp2:
   subcklr (injp @ injp) injp.
-  
 Lemma injp_injp:
   subcklr injp (injp @ injp).
 ```
 
+Here `subcklr` is the refinement of kripke memory relations. The lemma
+`cc_c_ref` in [cklr/CKLRAlgebra.v](DirectRefinement/cklr/CKLRAlgebra.v)
+can turn `subcklr R S` into the refinement of simulation conventions
+`ccref (cc_c R) (cc_c S)`. Similar lemma `cc_asm_ref` for `cc_asm` is defined
+in [x86/Asm.v](DirectRefinement/x86/Asm.v).
+
 Here we briefly persent the construction of intermediate memory state
 (as discussed in the paper line 738-753) as following steps. 
-We first construct the injections and shape of `m2'`:
-```
-Fixpoint update_meminj12 (sd1': list block) (j1 j2 j': meminj) (si1: sup) :=
-  match sd1' with
-    |nil => (j1,j2,si1)
-    |hd::tl =>
-       match compose_meminj j1 j2 hd, (j' hd) with
-       | None , Some (b2,ofs) =>
-         let b0 := fresh_block si1 in
-         update_meminj12 tl (meminj_add j1 hd (b0,0) )
-                         (meminj_add j2 (fresh_block si1) (b2,ofs))
-                         j' (sup_incr si1)
-       | _,_ => update_meminj12 tl j1 j2 j' si1
-       end
-  end.
-```
+We first construct the injections and shape of `m2'` using
+the operation `update_meminj12` defined in 
+[cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v).
 
 We then copy the values and permissions for newly allocated blocks as:
 
 ```
 Definition m2'1 := Mem.step2 m1 m2 m1' s2' j1'.
 ```
-Finally we update the values and permissions for old blocks according whether they
-are protected or read-only using:
+Finally we update the values and permissions for old blocks:
 
 ```
 Definition m2' := Mem.copy_sup m1 m2 m1' j1 j2 j1' INJ12 (Mem.support m2) m2'1.
@@ -491,41 +482,38 @@ For these operations, we changed the type of `mem_access` to be the same structu
 `mem_contents` in order to enumerate the valid (with nonempty permissions)
 locations of a memory block.
 ```
-# Our implementation
 Record mem' : Type := mkmem {
-  mem_contents: NMap.t (ZMap.t memval);
+  ...
+  (* old implementation *)
+  (* mem_access: NMap.t (Z -> perm_kind -> option permission); *)
   mem_access: NMap.t (ZMap.t memperm);
   ...
 }
-
-# CompCertO v3.10
-Record mem' : Type := mkmem {
-  mem_contents: NMap.t (ZMap.t memval);
-  mem_access: NMap.t (Z -> perm_kind -> option permission);
-  ... 
-}
-
 ```
+Given the transivity of `injp` as depicted in Figure 10 (line 599), we are able to
+achieve the "real" vertical composition of open simulations as depicted in Figure 9 (line 589).
 
 ### Derivation of direct Refinement (Section 4)
 
 #### Proofs of individual passes
 
-Table 1 can be checked accoding to `CompCertO's passes` in 
-[driver/Compiler.v](DirectRefinement/driver/Compiler.v). 
-The definitions used in the table from CompCertO can be found as follows.
-The simulation conventions relate the same language interfaces 
-`cc_c`, `cc_locset`, `cc_mach` and `cc_asm` (line 813) are defined in 
-in [common/Languageinterface.v](DirectRefinement/common/LanguageInterface.v),
-[backend/Conventions](DirectRefinement/backend/Conventions.v),
-[backend/Mach.v](DirectRefinement/backend/Mach.v) and
-[x86/Asm.v](DirectRefinement/x86/Asm.v).
-The structure simulation conventions `cc_c_locset`, `cc_locset_mach` and
-`cc_mach_asm` (line 823) are defined in 
-[backend/Conventions](DirectRefinement/backend/Conventions.v),
-[driver/CallConv.v](DirectRefinement/driver/CallConv.v) and
-[x86/Asm.v](DirectRefinement/x86/Asm.v). The definition of semantic invariant
-and `wt` are in [common/Invariant.v](DirectRefinement/common/Invairant.v):
+- Table 1 can be checked accoding to `CompCertO's passes` in 
+  [driver/Compiler.v](DirectRefinement/driver/Compiler.v). 
+  The definitions used in the table from CompCertO can be found as follows.
+  The simulation conventions relate the same language interfaces 
+  `cc_c`, `cc_locset`, `cc_mach` and `cc_asm` (line 813) are defined in 
+  in [common/Languageinterface.v](DirectRefinement/common/LanguageInterface.v),
+  [backend/Conventions](DirectRefinement/backend/Conventions.v),
+  [backend/Mach.v](DirectRefinement/backend/Mach.v) and
+  [x86/Asm.v](DirectRefinement/x86/Asm.v).
+  The structure simulation conventions `cc_c_locset`, `cc_locset_mach` and
+  `cc_mach_asm` (line 823) are defined in 
+  [backend/Conventions](DirectRefinement/backend/Conventions.v),
+  [driver/CallConv.v](DirectRefinement/driver/CallConv.v) and
+  [x86/Asm.v](DirectRefinement/x86/Asm.v). 
+  
+- The *semantic invariant* is defined as `invairant` in
+  [common/Invariant.v](DirectRefinement/common/Invairant.v):
 
 ```
 Record invariant {li: language_interface} :=
@@ -535,42 +523,17 @@ Record invariant {li: language_interface} :=
     query_inv : inv_world -> query li -> Prop;
     reply_inv : inv_world -> reply li -> Prop;
   }.
-
-Definition wt_c : invariant li_c :=
-  {|
-    symtbl_inv :=
-      fun '(se, sg) => eq se;
-    query_inv :=
-      fun '(se, sg) q =>
-        sg = cq_sg q /\ Val.has_type_list (cq_args q) (sig_args sg);
-    reply_inv :=
-      fun '(se, sg) r =>
-        Val.has_type (cr_retval r) (proj_sig_res sg);
-  |}.
-
 ```
 
 For the passes using static analysis, we define the invariant `ro` in
 [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
 ```
-
-Inductive sound_query ge m: c_query -> Prop :=
-  sound_query_intro vf sg vargs:
-    sound_memory_ro ge m ->
-    sound_query ge m (cq vf sg vargs m).
-
-Inductive sound_reply m: c_reply -> Prop :=
-  sound_reply_intro res tm:
-    ro_acc m tm ->
-    sound_reply m (cr res tm).
-
 Definition ro : invariant li_c :=
   {|
     symtbl_inv '(row ge m) := eq ge;
     query_inv '(row ge m) := sound_query ge m;
     reply_inv '(row ge m) := sound_reply m;
   |}.
-
 ```
 
 The proof which uses `injp` to guarantee the dynamic values of
