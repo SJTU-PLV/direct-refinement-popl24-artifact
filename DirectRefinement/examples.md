@@ -10,30 +10,59 @@ the direct refinement.
 The C or assembly code of `client.c`, `server.s` and `server_opt.s`
 are shown in Figure 3 in our paper.
 
-* `client.c` is defined in [Client.v](demo/Client.v).
-* `server.s` and `server_opt.s` are defined in [Server.v](demo/Server.v).
+* `client.c` is defined in [demo/Client.v](demo/Client.v).
+* `server.s` and `server_opt.s` are defined in [demoServer.v](demo/Server.v).
 
 ### Refinement for the Hand-written Server (Section 5.1)
 
 * (Definition 5.1) The hand-written specification ($L_S$) for the
-  optimized server (i.e., `server_opt.s`) is defined by `L2` in [Serverspec.v](demo/Serverspec.v#L116). The hand-written specification (not
-  discussed in the paper) for `server.s` is defined by `L1` in [Serverspec.v](demo/Serverspec.v#L98).
-* (Theorem 5.2) The theorem of $L_S
-  \leqslant_{\mathbb{C}}[\![\texttt{server\_opt.s}]\!]$ is defined by
-  `semantics_preservation_L2` in [Serverproof.v](demo/Serverproof.v).
-  This proof is decomposed into  $L_S \leqslant_{\texttt{wt}} L_S$ and
-  $L_S \leqslant_{\texttt{ro}\cdot\texttt{CAinjp}}
-  [\![\texttt{server\_opt.s}]\!]$, which are stated in
-  `self_simulation_wt'` and `CAinjp_simulation_L2`, respectively. More specifically, for the verification of $L_S \leqslant_{\texttt{ro}\cdot\texttt{CAinjp}} [\![\texttt{server\_opt.s}]\!]$, the simulation relation is defined by `match_state_c_asm` in [Serverproof.v](demo/Serverproof.v).
+  optimized server (i.e., `server_opt.s`) is defined by `L2` in [demo/Serverspec.v](demo/Serverspec.v#L116). The hand-written specification (not
+  discussed in the paper) for `server.s` is defined by `L1` in [demo/Serverspec.v](demo/Serverspec.v#L98).
+* (Theorem 5.2) It is defined by
+  `semantics_preservation_L2` in [demo/Serverproof.v](demo/Serverproof.v#L1581).
+  ```
+  Lemma semantics_preservation_L2:
+    forward_simulation cc_compcert cc_compcert L2 (Asm.semantics b2).
+  ```
+  This proof is decomposed into
+  [self_simulation_wt](demo/Serverproof.v#L1533) and
+  [CAinjp_simulation_L2](demo/Serverproof.v#L1089) in the same file.
+  For `CAinjp_simulation_L2`, the simulation relation is defined by [match_state_c_asm](demo/Serverproof.v#42).
+  
+
 
 ### End-to-End Correctness Theorem (Section 5.2)
 
-* Definition of the top-level specification (optimized version) $L_{\texttt{CS}}$ is by `top_spec2` in [ClientServerCspec2.v](demo/ClientServerCspec2.v). The unoptimized top-level specification is defined by `top_spec1` in [ClientServerCspec1.v](demo/ClientServerCspec2.v).
-* (Lemma 5.3) $L_{\texttt{CS}} \leqslant_{\texttt{ro}\cdot\texttt{wt}\cdot \texttt{c}_{\texttt{injp}}} [\![\texttt{client.c}]\!] \oplus L_S$ is defined by `top_simulation_L2` in [ClientServerCspec2.v](demo/ClientServerCspec2.v). The simulation relation is defined by `match_state` in the same file. Note that `top_simulation_L1` is the refinement theorem for the unoptimized server, i.e., $L_S$ and $L_{\texttt{CS}}$ in $L_{\texttt{CS}} \leqslant_{\texttt{ro}\cdot\texttt{wt}\cdot \texttt{c}_{\texttt{injp}}} [\![\texttt{client.c}]\!] \oplus L_S$ are replaced by `L1` and `top_spec1`, respectively.
-* (Theorem 5.4) `compose_simulation` in [Smallstep.v](common/Smallstep.v) and `asm_linking` in [AsmLinking.v](x86/AsmLinking.v).
-* (Lemma 5.5) `compose_Client_Server_correct2` in [ClientServer.v](demo/ClientServer.v).
-* (Lemma 5.6) `ro_injp_cc_compcert` in [ClientServer.v](demo/ClientServer.v).
-* (Theorem 5.7) `spec_sim_2` in [ClientServer.v](demo/ClientServer.v).
+* Definition of the top-level specification (for optimized server `server_opt.s`) $L_{CS}$ is `top_spec2` in [demo/ClientServerCspec2.v](demo/ClientServerCspec2.v#138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](demo/ClientServerCspec.v#L136).
+* (Lemma 5.3) It is defined by `top_simulation_L2` in [demo/ClientServerCspec2.v](demo/ClientServerCspec2.v#L832). 
+  ```
+  Lemma top_simulation_L2:
+    forward_simulation (cc_c injp) (cc_c injp) top_spec2 composed_spec2.
+  ```
+  The simulation relation is defined by
+  [match_state](demo/ClientServerCspec2.v#254) in the same file. For
+  the same theorem for unoptimized server, we define it in
+  [top_simulation_L1](demo/ClientServerCspec.v#L136).
+
+* (Theorem 5.4) `compose_fsim_simulation` in [Smallstep.v](common/Smallstep.v#L896) and `asm_linking` in [AsmLinking.v](x86/AsmLinking.v#L371).
+  ```
+  Lemma compose_fsim_components:
+    fsim_components ccA12 ccB12 L1 L2 ->
+    fsim_components ccA23 ccB23 L2 L3 ->
+    fsim_components (ccA12 @ ccA23) (ccB12 @ ccB23) L1 L3.
+  ```
+  ```
+  Lemma asm_linking:
+  forward_simulation cc_id cc_id
+    (SmallstepLinking.semantics L (erase_program p))
+    (semantics p).
+  ```
+* (Lemma 5.5) `compose_Client_Server_correct2` in [demo/ClientServer.v](demo/ClientServer.v#L42).
+* (Lemma 5.6) `ro_injp_cc_compcert` in [demo/ClientServer.v](demo/ClientServer.v#L76).
+* (Theorem 5.7) `spec_sim_2` in [ClientServer.v](demo/ClientServer.v#L146).
+  ```
+  Theorem spec_sim_2 : forward_simulation cc_compcert cc_compcert top_spec2 (Asm.semantics tp2).
+  ```
   
 ### Other Examples
 
@@ -44,7 +73,7 @@ paper. However, we implement and verify them to show the effectiveness of our fr
 #### Mutual Recursive Client-Server Example
 
 We define a mutual recursive client-server example where the server
-code is the same as `server.s` in [Server.v](demo/Server.v) and the
+code is the same as `server.s` in [demo/Server.v](demo/Server.v) and the
 client code can repeatedly invoke the server to encrypt a list of
 data. The C code of the new client (denoted by `client_mr.c`) is shown
 below:
@@ -72,17 +101,30 @@ void request (int *r){
 ```
 
 * `client_mr.c` is defined by the Coq definition `client` in
-  [ClientMR.v](demo/ClientMR.v).
-* The definition of server is the same as the example (`server.s`)
-  introduced in our paper, i.e., it is defined by  `L1` in
-  [Server.v](demo/Server.v). Note that we implement the repeated
-  invocation by directly passing the `request` function in `client` to
-  the server. Thereby the server can jump to the call-back function
-  (the `request` function in client) to encrypt the subsequent data.
+  [demo/ClientMR.v](demo/ClientMR.v#L157).
+* The definition of servers are the same as the examples (`server.s`
+  and `server_opt.s`) introduced in our paper, i.e., it is defined by
+  `b1` and `b2` in [demo/Server.v](demo/Server.v). Note that we
+  implement the repeated invocation by directly passing the `request`
+  function in `client` to the server. Thereby the server can jump to
+  the call-back function (the `request` function in client) to encrypt
+  the subsequent data.
 * The top level specification is defined by `top_spec1` in
-  [ClientServerMRCSpec.v](demo/ClientServerMRCSpec.v).
-* The refinement $\texttt{top\_spec1} \leqslant_{\texttt{ro}\cdot\texttt{wt}\cdot \texttt{c}_{\texttt{injp}}} [\![\texttt{client\_mr.c}]\!] \oplus \texttt{L1}$ is defined by `top_simulation_L1`, `top1_ro` and `top1_wt` in [ClientServerMRCspec.v](demo/ClientServerMRCSpec.v).
-* The final theorem $\texttt{top\_spec1} \leqslant_{\mathbb{C}} [\![\texttt{CompCert}(\texttt{client\_mr.c}) + \texttt{server.s}]\!]$ is defined by `spec_sim_mr` in [ClientServer.v](demo/ClientServer.v).
+  [demo/ClientServerMRCSpec.v](demo/ClientServerMRCSpec.v#L150).
+* The refinement between the top-level specification and composition of `client_mr.c` and `L1` is defined by `top_simulation_L1` in [demo/ClientServerMRCspec.v](demo/ClientServerMRCSpec.v#L844).
+  ```
+  Lemma top_simulation_L1:
+  forward_simulation (cc_c injp) (cc_c injp) top_spec1 composed_spec1.
+  ```
+  To compose with the direct refinement, we show that the top-level
+  specification is self-simulated by `ro` and `wt`. They are defined
+  by `top1_ro` and `top1_wt` in [demo/ClientServerMRCspec.v](demo/ClientServerMRCSpec.v).
+* The direct refinement of this example is defined by `spec_sim_mr` in
+  [demo/ClientServer.v](demo/ClientServer.v#233).
+  ```
+  Theorem spec_sim_mr : forward_simulation cc_compcert cc_compcert (top_spec1 N) (Asm.semantics tp1).
+  ```
+
 
 #### Mutual Summation Example
 
