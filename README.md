@@ -175,9 +175,61 @@ grep "Admitted" */*.v
 ```
 This instruction should return no result.
 
+### Table 3
+The following are the instructions for reproducing the lines of code (LOC) in 
+Table 3 (line 2255) of the [technical report](paper/technical-report.pdf).
 
-[TODO: compare the Lines of code with CompCertOv3.10, change the table in TR according to 
-modification of the code]
+#### Column 2
+
+The results in the second column can be produced by running the following
+command in directories `CompCertOv3.10` and adding the numbers in the `spec` and
+`proof` for each file.
+
+```
+coqwc lib/Maps.v common/Memory.v cklr/InjectFootprint.v cfrontend/SimplLocalsproof.v backend/ValueAnalysis.v backend/Deadcodeproof.v backend/Constpropproof.v backend/CSEproof.v backend/Unusedglobproof.v driver/CallConv.v driver/Compiler.v
+```
+
+The last row of result should be 
+```
+ // CompCertOv3.10
+ 6054     9871     1357 total // 15925
+```
+
+#### Column 3
+
+The numbers in Column 3 can be obtained in a similar way. Run the following commands 
+in `DirectRefinement` for the results except for the examples:
+```
+coqwc lib/Maps.v common/Memory.v cklr/InjectFootprint.v cfrontend/SimplLocalsproof.v backend/ValueAnalysis.v backend/Deadcodeproof.v backend/Constpropproof.v backend/CSEproof.v backend/Unusedglobproof.v driver/CA.v driver/CallConv.v driver/Compiler.v
+```
+
+The last row of result should be 
+```
+7863    15975     1646 total #23838
+```
+
+For the Client-Server example, run
+```
+coqwc demo/Client.v demo/Server.v demo/Serverspec.v demo/Serverproof.v demo/ClientServerCspec.v demo/ClientServerCspec2.v demo/ClientMR.v demo/ClientServerMRCSpec.v demo/ClientServerMRCSpec2.v demo/ClientServer.v 
+```
+and add the `spec` and `proof` of the last row.
+```
+2014     5315      770 total # 7327
+```
+
+For the Mutual Sum example, run
+```
+coqwc demo/Demo.v demo/Demospec.v demo/Demoproof.v demo/DemoCspec.v demo/Demotopspec.v
+```
+and add the `spec` and `proof` of the last row.
+```
+880     2248      231 total # 3128
+```
+
+Finally we get `23838 + 7327 + 3128 = 34293` for the number in row `Total`.
+
+#### Column 4
+The numbers in `Additions(+)` column is the submission of column 3 and colume 2.
 
 ## Additional artifact description
 
