@@ -711,14 +711,14 @@ Theorem clight_semantic_preservation:
   forward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp)
   /\ backward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp).
 ```
-## End-to-End Verification of Heterogenous Modules (Section 5)
+### End-to-End Verification of Heterogenous Modules (Section 5)
 
 In the section 5 of the paper, we introduce the end-to-end
 verification of the client-server example (whose code and proof
 structure are shown in Figure 3 and Figure 4, respectively) based on
 the direct refinement. 
 
-### Definitions of the Client-Server Example
+#### Definitions of the Client-Server Example
 
 The C or assembly code of `client.c`, `server.s` and `server_opt.s`
 are shown in Figure 3 in our paper.
@@ -726,7 +726,7 @@ are shown in Figure 3 in our paper.
 * `client.c` is defined in [demo/Client.v](demo/Client.v).
 * `server.s` and `server_opt.s` are defined in [demo/Server.v](demo/Server.v).
 
-### Refinement for the Hand-written Server (Section 5.1)
+#### Refinement for the Hand-written Server (Section 5.1)
 
 * (Definition 5.1) The hand-written specification ($L_S$) for the
   optimized server (i.e., `server_opt.s`) is defined by `L2` in [demo/Serverspec.v](demo/Serverspec.v#L116). The hand-written specification (not
@@ -744,7 +744,7 @@ are shown in Figure 3 in our paper.
   
 
 
-### End-to-End Correctness Theorem (Section 5.2)
+#### End-to-End Correctness Theorem (Section 5.2)
 
 * Definition of the top-level specification (for optimized server `server_opt.s`) $L_{CS}$ is `top_spec2` in [demo/ClientServerCspec2.v](demo/ClientServerCspec2.v#138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](demo/ClientServerCspec.v#L136).
 * (Lemma 5.3) It is defined by `top_simulation_L2` in [demo/ClientServerCspec2.v](demo/ClientServerCspec2.v#L832). 
@@ -787,13 +787,13 @@ are shown in Figure 3 in our paper.
   Theorem spec_sim_2 : forward_simulation cc_compcert cc_compcert top_spec2 (Asm.semantics tp2).
   ```
   
-### Other Examples
+#### Other Examples
 
 The following examples are not discussed in our paper, because they
 are more complicated than the client-server example introduced in our
 paper. However, we implement and verify them to show the effectiveness of our framework.
 
-#### Mutual Recursive Client-Server Example
+##### Mutual Recursive Client-Server Example
 
 We define a mutual recursive client-server example where the server
 code is the same as `server.s` in [demo/Server.v](demo/Server.v) and the
@@ -849,7 +849,7 @@ void request (int *r){
   ```
 
 
-#### Mutual Summation Example
+##### Mutual Summation Example
 
 We present the application of our method to an example borrowed from
 CompCertM[^1] — two programs that mutually invoke each other to finish
