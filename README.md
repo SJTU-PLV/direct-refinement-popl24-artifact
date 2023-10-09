@@ -640,9 +640,10 @@ Theorem clight_semantic_preservation:
 ### End-to-End Verification of Heterogenous Modules (Section 5)
 
 In the section 5 of the paper, we introduce the end-to-end
-verification of the client-server example (whose code and proof
-structure are shown in Figure 3 and Figure 4, respectively) based on
-the direct refinement. 
+verification of the client-server example based on the direct
+refinement. We first give the definitions of the C and assembly code
+of our exmaple, and then follow the Figure 4 to give the overview of
+the refinement proof.
 
 #### Definitions of the Client-Server Example
 
@@ -653,6 +654,10 @@ are shown in Figure 3 in our paper.
 * `server.s` and `server_opt.s` are defined in [demo/Server.v](DirectRefinement/demo/Server.v).
 
 #### Refinement for the Hand-written Server (Section 5.1)
+
+First, we show the refinement between the specification of
+`server_opt.s` (i.e., $`L_S`$ in our paper) and the semantics of
+`server_opts`.
 
 * (Definition 5.1) The hand-written specification ($L_S$) for the
   optimized server (i.e., `server_opt.s`) is defined by `L2` in [demo/Serverspec.v](DirectRefinement/demo/Serverspec.v#L116). The hand-written specification (not
@@ -669,8 +674,12 @@ are shown in Figure 3 in our paper.
   For the proof of `CAinjp_simulation_L2`, the simulation relation is defined by [match_state_c_asm](DirectRefinement/demo/Serverproof.v#42).
   
 
-
 #### End-to-End Correctness Theorem (Section 5.2)
+
+In this section, we first show the refinement between the top-level
+specification ($`L_{CS}`$) and the composition of `client.c` and
+$`L_S`$. And then we use the correctness of the compiler and verifical
+compositionality to establish the end-to-end refinement.
 
 * Definition of the top-level specification (for optimized server `server_opt.s`) $L_{CS}$ is `top_spec2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](DirectRefinement/demo/ClientServerCspec.v#L136).
 * (Lemma 5.3) It is defined by `top_simulation_L2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#L832). 
