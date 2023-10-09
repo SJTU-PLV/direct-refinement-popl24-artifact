@@ -384,8 +384,9 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 #### Refinement of calling conventions
 
 -  The refinement of simulation conventions (line 571-572) is defined as `ccref` 
-   in [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v). The equivalence
-   is defined as `cceqv` in the same file.
+   in [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
+   Note that $\mathbb{R} \sqsubseteq \mathbb{S}$ corresponds to `ccref S R`.
+   The equivalence is defined as `cceqv` in the same file.
 
 -  Theorem 2.4 (line 580) is defined as `open_fsim_ccref` in 
    [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
@@ -497,10 +498,10 @@ achieve the "real" vertical composition of open simulations as depicted in Figur
 
 #### Proofs of individual passes
 
-- Table 1 can be checked accoding to `CompCertO's passes` in 
+- Table 1 can be checked according to `CompCertO's_passes` in 
   [driver/Compiler.v](DirectRefinement/driver/Compiler.v). 
   The definitions used in the table from CompCertO can be found as follows.
-  The simulation conventions relate the same language interfaces 
+  The simulation conventions between the same language interfaces 
   `cc_c`, `cc_locset`, `cc_mach` and `cc_asm` (line 813) are defined in 
   in [common/Languageinterface.v](DirectRefinement/common/LanguageInterface.v),
   [backend/Conventions](DirectRefinement/backend/Conventions.v),
@@ -539,7 +540,10 @@ Definition ro : invariant li_c :=
 The proof which uses `injp` to guarantee the dynamic values of
 unreachable local variables (Fig. 14) is carried out in the lemma
  `transf_external_states` in 
-[backend/Constpropproof.v](DirectRefinement/bakend/Constpropproof.v).
+[backend/Constpropproof.v](DirectRefinement/backend/Constpropproof.v).
+The same theorems and simular proofs can be found in
+[backend/CSEproof.v](DirectRefinement/backend/CSEproof.v) and
+[backend/Deadcodeproof.v](DirectRefinement/backend/Deadcodeproof.v).
 
 
 For [Unusedglob](DirectRefinement/backend/Unusedglobproof.v) pass,
@@ -553,8 +557,9 @@ The proofs of remaining passes are unchanged from CompCertO.
 
 #### Unification of the simulation conventions
 
-We have mentioned the corresponding theorems of lemmas in Section 4.2 in the
-`List of claims` part. The direct simulation convention $\mathcal{C}$ (line 973)
+We have mentioned the corresponding theorems of the properties for refining
+simulation conventions in Section 4.2 in the `List of technical claims` part.
+The direct simulation convention $\mathbb{C}$ (line 973)
 is defined as `cc_compcert` in [driver/Compiler.v](DirectRefinement/driver/Compiler.v):
 ```
 Definition cc_compcert : callconv li_c li_asm :=
@@ -573,55 +578,58 @@ Lemma ca_cllmma_equiv :
 
 Lemma cainjp__injp_ca_equiv:
   cceqv cc_c_asm_injp (cc_c injp @ cc_c_asm).
-  
 ```
 
 The unification of simulation convention in 
 [driver/Compiler.v](DirectRefinement/driver/Compiler.v) is slightly different
-as we presented in the paper. Take the incoming side for example.
-We first define extend `cc_compcert` to `cc_compcert_cod` as follows:
+as we presented in the paper. As in the paper, we take the outgoing side for example.
+We first extend `cc_compcert` to `cc_compcert_dom` as follows:
 ```
-Definition cc_compcert_cod : callconv li_c li_asm :=
-  ro @ wt_c @ cc_c injp @
-       cc_c_locset @ cc_locset_mach @ cc_mach_asm @
-       @ cc_asm inj.
+Definition cc_compcert_dom : callconv li_c li_asm :=
+  ro @ wt_c @  cc_c injp @
+       cc_c_locset @ cc_locset_mach @ cc_mach_asm.
 	   
 Theorem cc_compcert_merge:
   forall p tp,
   forward_simulation cc_compcert_dom cc_compcert_cod (Clight.semantics1 p) (Asm.semantics tp) ->
-  forward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp).
-  
+  forward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp).  
 ```
-Then we define the simulation convention `cc_c_level` for C level and further extend
-`cc_compcert_cod` to satisfy the passes after C level:
+
+Then we define the simulation convention `cc_c_level` for the frontend of C level
+passes. Thus we partially extend `cc_compcert_dom` to satisfy the passes after
+`Deadcode`:
+
 ```
 Definition cc_c_level : callconv li_c li_c := ro @ wt_c @ injp.
 
-Lemma cc_compcert_expand:
+Lemma cc_compcert_collapse:
   ccref
-    cc_compcert_cod
-    (cc_c_level @                                          (* Passes up to Alloc *)
-     cc_c inj @                                            (* to compose the ext downside*)
-     (wt_c @ cc_c ext @ cc_c_locset) @                     (* Alloc *)
-     cc_locset ext @                                       (* Tunneling *)
-     (wt_loc @ cc_locset_mach @ cc_mach inj) @             (* Stacking *)
-     (cc_mach ext @ cc_mach_asm) @                         (* Asmgen *)
-     cc_asm inj).
+    (cc_c_level @                                 (* Passes up to Unusedglob *)
+     cc_c inj @                                   (* Unusedglob *)
+     (wt_c @ cc_c ext @ cc_c_locset) @            (* Alloc *)
+     cc_locset ext @                              (* Tunneling *)
+     (wt_loc @ cc_locset injp @ cc_locset_mach) @ (* Stacking *)
+     (cc_mach ext @ cc_mach_asm) @                (* Asmgen *)
+    cc_asm inj)                                   (* Self-Sim *)
+    cc_compcert_dom.
+```
+
+Finally we extend `cc_c_level` to satisfy the passes at C level:
 
 ```
-Finally we expend `cc_c_level` to satisfy the passes at C level:
-```
-Lemma cc_c_level_expand:
-  ccref cc_c_level
-        ( ro @ cc_c injp @ 
-              cc_c inj@
-              (wt_c @ cc_c ext) @ cc_c ext @
-              cc_c inj @
-              cc_c ext @ cc_c inj @ cc_c injp @
-              (ro @ injp) @ (ro @ injp) @ (ro @ injp)).
+Lemma cc_c_level_collapse:
+  ccref (ro @ cc_c injp @ cc_c injp @             (* Up to Cminorgen *)
+         (wt_c @ cc_c ext) @ cc_c ext @           (* Up to RTLgen *)
+         cc_c inj @                               (* Self-Sim *)
+         cc_c ext @                               (* Tailcall *)
+         cc_c injp @                              (* Inlining *)
+         cc_c injp @                              (* Self-Sim *)
+         (ro @ injp) @ (ro @ injp) @ (ro @ injp)  (* VA passes *)
+        )
+        cc_c_level.
 ```
 Therefore the simulation conventions can be refined into our direct simulation 
-convention as proved in theorem `clight_semantics_preservation`:
+convention as proved in the theorem `clight_semantics_preservation` (Theorem 4.9):
 ```
 Theorem clight_semantic_preservation:
   forall p tp,
