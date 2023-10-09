@@ -272,7 +272,7 @@ coqwc lib/Maps.v common/Memory.v cklr/InjectFootprint.v cfrontend/SimplLocalspro
 
 The last row of result should be 
 ```
-7863    15975     1646 total #23838
+7863    15975     1647 total #23838
 ```
 
 For the Client-Server example, run
