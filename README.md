@@ -281,7 +281,7 @@ coqwc demo/Client.v demo/Server.v demo/Serverspec.v demo/Serverproof.v demo/Clie
 ```
 and add the `spec` and `proof` of the last row.
 ```
-1669     4177      607 total # 6453
+1669     4177      607 total # 5876
 ```
 
 For the Mutual Sum example, run
@@ -293,7 +293,7 @@ and add the `spec` and `proof` of the last row.
 880     2248      231 total # 3128
 ```
 
-Finally we get `23838 + 6453 + 3128 = 33419` for the number in row `Total`.
+Finally we get `23838 + 5876 + 3128 = 32842` for the number in row `Total`.
 
 #### Column 4
 The numbers in `Additions(+)` column is the result of subtracting column 2 from column 3.
