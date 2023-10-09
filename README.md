@@ -14,7 +14,7 @@ Koenig and Zhong Shao
 ## List of technical claims
 
 Since our artifact is mainly Coq proofs, here we only list the *technical claims* 
-made in the paper. We will domonstrate the structure of Coq proofs
+made in the paper. We will demonstrate the structure of Coq proofs
 following the structure of the paper in the last section.
 
 For the technical claims made in our paper, please refer to the source files in the 
@@ -137,7 +137,7 @@ For the technical claims made in our paper, please refer to the source files in 
   
 ### Section 6
 
-- The claim "We added 15k lines of code on top of CompCertO" fomr Section 6 (line 1114)
+- The claim "We added 15k lines of code on top of CompCertO" form Section 6 (line 1114)
   is checked by `coqwc`. We add some theorems for readability after the submission.
   See the `Evaluation of soundness and proof effort` section.
   
@@ -296,7 +296,7 @@ and add the `spec` and `proof` of the last row.
 Finally we get `23838 + 6453 + 3128 = 33419` for the number in row `Total`.
 
 #### Column 4
-The numbers in `Additions(+)` column is the result of subtracting column 2 from colume 3.
+The numbers in `Additions(+)` column is the result of subtracting column 2 from column 3.
 
 ## Structure of formal proofs
 
@@ -420,7 +420,7 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 		inject_separated f f' m1 m2 ->
 		injp_acc (injpw f m1 m2 Hm) (injpw f' m1' m2' Hm').
 	```
-	Note that *mem-acc(m,m')* mentioned in the paper (line 422) is summerized as definition
+	Note that *mem-acc(m,m')* mentioned in the paper (line 422) is summarized as definition
 	`ro_acc` in [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
    ```
    Inductive ro_acc : mem -> mem -> Prop :=
@@ -444,7 +444,7 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 
 
 ### `injp` transitivity (Section 3)
-The proof of `injp` transivity in 
+The proof of `injp` transitivity in 
 [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v) is commented according
 to the appendix C of our [technical report](paper/technical-report.pdf).
 The refinements (Lemma 3.1 and Lemma 3.2) correspond to the following lemmas:
@@ -461,7 +461,7 @@ can turn `subcklr R S` into the refinement of simulation conventions
 `ccref (cc_c R) (cc_c S)`. Similar lemma `cc_asm_ref` for `cc_asm` is defined
 in [x86/Asm.v](DirectRefinement/x86/Asm.v).
 
-Here we briefly persent the construction of intermediate memory state
+Here we briefly present the construction of intermediate memory state
 (as discussed in the paper line 738-753) as following steps. 
 We first construct the injections and shape of `m2'` using
 the operation `update_meminj12` defined in 
@@ -513,7 +513,7 @@ achieve the "real" vertical composition of open simulations as depicted in Figur
   [driver/CallConv.v](DirectRefinement/driver/CallConv.v) and
   [x86/Asm.v](DirectRefinement/x86/Asm.v). 
   
-- The *semantic invariant* is defined as `invairant` in
+- The *semantic invariant* is defined as `invariant` in
   [common/Invariant.v](DirectRefinement/common/Invairant.v):
 
 ```
@@ -541,7 +541,7 @@ The proof which uses `injp` to guarantee the dynamic values of
 unreachable local variables (Fig. 14) is carried out in the lemma
  `transf_external_states` in 
 [backend/Constpropproof.v](DirectRefinement/backend/Constpropproof.v).
-The same theorems and simular proofs can be found in
+The same theorems and similar proofs can be found in
 [backend/CSEproof.v](DirectRefinement/backend/CSEproof.v) and
 [backend/Deadcodeproof.v](DirectRefinement/backend/Deadcodeproof.v).
 
@@ -637,12 +637,12 @@ Theorem clight_semantic_preservation:
   forward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp)
   /\ backward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp).
 ```
-### End-to-End Verification of Heterogenous Modules (Section 5)
+### End-to-End Verification of Heterogeneous Modules (Section 5)
 
 In the section 5 of the paper, we introduce the end-to-end
 verification of the client-server example based on the direct
 refinement. We first give the definitions of the C and assembly code
-of our exmaple, and then follow the Figure 4 to give the overview of
+of our example, and then follow the Figure 4 to give the overview of
 the refinement proof.
 
 #### Definitions of the Client-Server Example
@@ -678,7 +678,7 @@ First, we show the refinement between the specification of
 
 In this section, we first show the refinement between the top-level
 specification ($`L_{CS}`$) and the composition of `client.c` and
-$`L_S`$. And then we use the correctness of the compiler and verifical
+$`L_S`$. And then we use the correctness of the compiler and vertical
 compositionality to establish the end-to-end refinement.
 
 * Definition of the top-level specification (for optimized server `server_opt.s`) $L_{CS}$ is `top_spec2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](DirectRefinement/demo/ClientServerCspec.v#L136).
