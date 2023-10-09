@@ -277,11 +277,11 @@ The last row of result should be
 
 For the Client-Server example, run
 ```
-coqwc demo/Client.v demo/Server.v demo/Serverspec.v demo/Serverproof.v demo/ClientServerCspec.v demo/ClientServerCspec2.v demo/ClientMR.v demo/ClientServerMRCSpec.v demo/ClientServerMRCSpec2.v demo/ClientServer.v 
+coqwc demo/Client.v demo/Server.v demo/Serverspec.v demo/Serverproof.v demo/ClientServerCspec.v demo/ClientServerCspec2.v demo/ClientMR.v demo/ClientServerMRCSpec.v demo/ClientServer.v 
 ```
 and add the `spec` and `proof` of the last row.
 ```
-2014     5315      770 total # 7327
+1669     4177      607 total # 6453
 ```
 
 For the Mutual Sum example, run
@@ -293,7 +293,7 @@ and add the `spec` and `proof` of the last row.
 880     2248      231 total # 3128
 ```
 
-Finally we get `23838 + 7327 + 3128 = 34293` for the number in row `Total`.
+Finally we get `23838 + 6453 + 3128 = 33419` for the number in row `Total`.
 
 #### Column 4
 The numbers in `Additions(+)` column is the result of subtracting column 2 from colume 3.
@@ -877,4 +877,4 @@ The procedure of the refinement is shown below:
 ## Reference
 [^1]: Yuting Wang, Ling Zhang, Zhong Shao, and Jérémie Koenig. 2022. Verified compilation of C programs with a nominal memory model. Proc. ACM Program. Lang. 6, POPL, Article 25 (January 2022), 31 pages. https://doi.org/10.1145/3498686
 
-[^2]: Youngju Song, Minki Cho, Dongjoo Kim, Yonghyun Kim, Jeehoon Kang, and Chung-Kil Hur. 2020. CompCertM: CompCert with C-Assembly Linking and Lightweight Modular Verification. Proc. ACM Program. Lang. 4, POPL, Article 23 (Jan. 2020),31pages. https://doi.org/10.1145/3371091
+[^2]: Youngju Song, Minki Cho, Dongjoo Kim, Yonghyun Kim, Jeehoon Kang, and Chung-Kil Hur. 2020. CompCertM: CompCert with C-Assembly Linking and Lightweight Modular Verification. Proc. ACM Program. Lang. 4, POPL, Article 23 (Jan. 2020), 31 pages. https://doi.org/10.1145/3371091
