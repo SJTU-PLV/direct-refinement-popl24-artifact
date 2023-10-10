@@ -1,6 +1,6 @@
 # Fully Composable and Adequate Verified Compilation with Direct Refinements between Open Modules (Artifact for POPL 2024)
 
-## Overview 
+## 1. Overview 
 
 This artifact contains an extension of CompCertO that provides a
 direct refinement between the source C modules and the target assembly
@@ -18,14 +18,14 @@ Open Modules*](paper/direct-refinement.pdf). Ling Zhang, Yuting Wang, Jinhua Wu,
 Koenig and Zhong Shao
 
 
-## List of Claims
+## 2. List of Claims
 
 Since our paper is about compiler verification, the claims we make are
 mainly in the form of definitions, lemmas and theorems. We list the
 claims made in each section of the paper below along with the
 references to their corresponding Coq formalization in the artifact. A
 more organized and complete explanation of the Coq formalization is
-located in the section "Structure of Formal Proofs" below.
+located in the section "Structure of the Formal Proofs" below.
 
 ### Section 2
 - The simulation convention $\mathbb{C}$ for the direct refinement in
@@ -152,20 +152,21 @@ located in the section "Structure of Formal Proofs" below.
   See the `Evaluation of soundness and proof effort` section.
   
 
-## Installation
+## 3. Installation
 
 
 ###  Requirements
 
-This artifact is based on CompCertO and CompCert v3.10. You can find the user manual of 
+This artifact is based on the most recent version of CompCertO which
+is in turn based on CompCert v3.10. You can find the user manual of
 CompCert [here](http://compcert.inria.fr/man/).
 
 - If you are using the VM, all the required software have already been installed on the 
 virtual machine.
 
 - If you prefer to compile the source code on your own computer, then
-We recommend using the `opam` package manager to set up a build environment. 
-We have tested the building on Linux with the following shell commands.
+we recommend using the `opam` package manager to set up a build environment in Linux. 
+We have tested the following building commands in the Linux shell (Ubuntu 22.04).
 ```
     # Initialize opam (if you haven't used it before)
     opam init --bare
@@ -180,37 +181,37 @@ We have tested the building on Linux with the following shell commands.
     # Configure the current shell to use the newly created opam switch
     eval $(opam env)
 ```
-### Instructions for compiling
+### Instructions for compiling the Coq code
 
-To compile the source code, please enter the `DirectRefinement` directory.
-Our implementation relies on the Coqrel library (repo in
-[here](https://github.com/CertiKOS/coqrel/tree/38dd003d28c91b1b93c01a160a31cdbc3348916a)),
-which must be built first. To build Coqrel, proceed in the following
-way:
+The Coq code is located in the `DirectRefinement` directory.
+First, you need to build a library named [Coqrel](https://github.com/CertiKOS/coqrel/tree/38dd003d28c91b1b93c01a160a31cdbc3348916a)),
 ```
 (cd coqrel && ./configure && make)
 ```
-Then, you can then build the compiler as follows:
+Then, you can build the whole extension of CompCertO along with all the examples, as follows:
 ```
 ./configure x86_64-linux
 make
 ```
-The compilation should start and terminate successfully. 
-If appropriate to your setting, we recommend you use a `-j` option
-when invoking make so as to enable parallel compilation.
+You are all set if the compilation finishes successfully.  You may
+also speed up the process by using `-jN` argument to run the Coq
+compiler in parallel.
+We have tested running `make -j4` in
+the VM with 4GB virtual memory and 4 CPU cores, which in turn runs
+on a host machine with Intel i9-12900H and 64 GB memory. The whole compilation takes about 8
+minutes. When using `make` command without any parallel compilation,
+it takes about 20 minutes.
 
-We have tested its compilation by running the command `make -j4` on
-the VM with 4GB virtual memory and 4 CPU cores. The VM in turn runs
-on a host machine with Intel i9-12900H. A single run takes about 8
-minutes. If using `make` command without any parallel compilation,
-the consumption of time is about 20 minutes.
+The same instructions should be followed if you also want to compile
+the original CompCert in the directory `CompCertOv3.10`.
 
-If you want to compile the CompCertOv3.10, the same instructions should
-work in the other directory.
 
 ### Navigating the proofs
 
-After that, you can navigate the source code by using [emacs](https://www.gnu.org/software/emacs/).
+After that, you can navigate the source code by using
+[emacs](https://www.gnu.org/software/emacs/) with [proof-general](https://proofgeneral.github.io/doc/master/userman/Introducing-Proof-General/)
+installed.
+
 For example, running
 
 ```
@@ -218,12 +219,12 @@ emacs cklr/InjectFootprint.v
 ```
 
 opens the emacs window in 
-[proof-general](https://proofgeneral.github.io/doc/master/userman/Introducing-Proof-General/) 
+proof-general
 mode for browsing the file `cklr/InjectFootprint.v`. 
 
 You can also compile the source code into html files for better
-presentation. Simply run the following command (which needs
-`coq2html` which has been installed on the VM)
+readability. Simply run the following command (needs
+`coq2html` which has already been installed in the VM)
 
 ```
 make documentation
@@ -243,14 +244,14 @@ make
 sudo make install
 ```
 
-## Evaluation of soundness and proof effort
+## 4. Evaluation of soundness and proof effort
 
 ### Soundness 
-To check soundness of this artifact, enter `DirectRefinement` and run
+To check that there is no admit in the artifact, enter `DirectRefinement` and run
 ```
 grep "Admitted" */*.v
 ```
-This instruction should return no result.
+which should show no admit.
 
 ### Proof effort
 
@@ -308,7 +309,8 @@ Finally we get `23838 + 5876 + 3128 = 32842` for the number in row `Total`.
 #### Column 4
 The numbers in `Additions(+)` column is the result of subtracting column 2 from column 3.
 
-## Structure of formal proofs
+
+## 5. Structure of the Formal Proofs
 
 This artifact is based on CompCertO v3.10, you can browse the structure and
 source code of original CompCert [here](http://compcert.inria.fr/doc/index.html).
@@ -893,7 +895,8 @@ The procedure of the refinement is shown below:
       forward_simulation cc_compcert cc_compcert top_spec (Asm.semantics tp).
   ```
 
-## Reference
+## References
 [^1]: Yuting Wang, Ling Zhang, Zhong Shao, and Jérémie Koenig. 2022. Verified compilation of C programs with a nominal memory model. Proc. ACM Program. Lang. 6, POPL, Article 25 (January 2022), 31 pages. https://doi.org/10.1145/3498686
 
 [^2]: Youngju Song, Minki Cho, Dongjoo Kim, Yonghyun Kim, Jeehoon Kang, and Chung-Kil Hur. 2020. CompCertM: CompCert with C-Assembly Linking and Lightweight Modular Verification. Proc. ACM Program. Lang. 4, POPL, Article 23 (Jan. 2020), 31 pages. https://doi.org/10.1145/3371091
+    
