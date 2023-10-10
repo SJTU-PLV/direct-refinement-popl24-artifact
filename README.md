@@ -918,7 +918,7 @@ The refinement is proved as follows:
   `L_A` corresponds to [top_simulation](DirectRefinement/demo/Demotopspec.v#L592),
   [top_ro](DirectRefinement/demo/Demotopspec.v#L933) and
   [topspec_self_simulation_wt](DirectRefinement/demo/Demotopspec.v#L940).
-* Finally, with the above refinements and the correctness of CompCert(O), we show the end-to-end refinement theorem in  `topspec_correct` in [Demotopspec.v](DirectRefinement/demo/Demotopspec.v#L1011).
+* Finally, with the above refinements and the correctness of CompCert(O), we show the end-to-end refinement theorem in  `topspec_correct` in [demo/Demotopspec.v](DirectRefinement/demo/Demotopspec.v#L1011).
   ```
   Theorem topspec_correct:
     forall tp M_C',
