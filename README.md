@@ -538,7 +538,7 @@ achieve the "real" vertical composition of open simulations as depicted in Figur
   and $`\mathit{asm}_K`$ (line 814) correspond to `cc_c`,
   `cc_locset`, `cc_mach` and `cc_asm` defined in
   [common/Languageinterface.v](DirectRefinement/common/LanguageInterface.v),
-  [backend/Conventions](DirectRefinement/backend/Conventions.v),
+  [backend/Conventions.v](DirectRefinement/backend/Conventions.v),
   [backend/Mach.v](DirectRefinement/backend/Mach.v) and
   [x86/Asm.v](DirectRefinement/x86/Asm.v).
   The structure simulation conventions $`\mathit{CL}`$, $`\mathit{LM}`$ and
@@ -550,7 +550,7 @@ achieve the "real" vertical composition of open simulations as depicted in Figur
   they are.
   
 - The *semantic invariant* is defined as `invariant` in
-  [common/Invariant.v](DirectRefinement/common/Invairant.v):
+  [common/Invariant.v](DirectRefinement/common/Invariant.v):
 
 ```
 Record invariant {li: language_interface} :=
@@ -778,7 +778,7 @@ void request (int *r){
     index += 1;
     encrypt(input[index - 1], request);
   }
-  else if (0 < index < N){
+  else if (0 < index && index < N){
     result[index - 1] = *r;
     index += 1;
     encrypt(input[index - 1], request);
@@ -851,7 +851,7 @@ and the other (denoted by `M_A`) is implemented in assembly. Their code are show
 ```
 
 ```x86asm
-/* Assembly implementation of M_A */  
+/* Assembly (CompCert Pseudo Assembly) implementation of M_A */  
 g:  Pallocframe 24 16 0 
     Pmov RBX 8(RSP) // save RBX
     /* begin */
@@ -877,7 +877,7 @@ l1: Pmov 8(RSP) RBX
 ```
 
 The refinement is proved as follows:
-* First, like what we do for the client-server example, we define a high-level specification (called `L_A`) for `M_A`. The definition of `L_A` is in [demo/Demospec.v](DirectRefinement/demo/Demospec.v#L88) with the same name. The refinement is defined by `M_A_semantics_preservation` in [demo/Demoproof](DirectRefinement/demo/Demoproof.v). 
+* First, like what we do for the client-server example, we define a high-level specification (called `L_A`) for `M_A`. The definition of `L_A` is in [demo/Demospec.v](DirectRefinement/demo/Demospec.v#L88) with the same name. The refinement is defined by `M_A_semantics_preservation` in [demo/Demoproof.v](DirectRefinement/demo/Demoproof.v). 
   ```
   Lemma M_A_semantics_preservation:
   forward_simulation cc_compcert cc_compcert L_A (Asm.semantics M_A).
