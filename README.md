@@ -289,11 +289,11 @@ The last row of result should be
 
 For the Client-Server example, run
 ```
-coqwc demo/Client.v demo/Server.v demo/Serverspec.v demo/Serverproof.v demo/ClientServerCspec.v demo/ClientServerCspec2.v demo/ClientMR.v demo/ClientServerMRCSpec.v demo/ClientServer.v 
+coqwc demo/Client.v demo/Server.v demo/Serverspec.v demo/Serverproof.v demo/ClientServerCspec.v demo/ClientServerCspec2.v demo/ClientMR.v demo/ClientServerMRCSpec.v demo/ClientServerMRCSpec2.v demo/ClientServer.v 
 ```
 and add the `spec` and `proof` of the last row.
 ```
-1669     4177      607 total # 5876
+2014     5315      770 total # 7329
 ```
 
 For the Mutual Sum example, run
@@ -305,7 +305,7 @@ and add the `spec` and `proof` of the last row.
 880     2248      231 total # 3128
 ```
 
-Finally we get `23838 + 5876 + 3128 = 32842` for the number in row `Total`.
+Finally we get `23838 + 7329 + 3128 = 34295` for the number in row `Total`.
 
 #### Column 4
 The numbers in `Additions(+)` column is the result of subtracting column 2 from column 3.
