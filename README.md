@@ -2,36 +2,46 @@
 
 ## Overview 
 
-This artifact consists of our development in the [DirectRefinement](DirectRefinement) 
-directory. We also uploaded [CompCertOv3.10](CompCertOv3.10) for comparison. 
-The artifact accompanies the following paper:
+This artifact contains an extension of CompCertO that provides a
+direct refinement between the source C modules and the target assembly
+modules while retaining the support of both horizontal and vertical
+compositionality and compilation to native assembly interfaces. The
+extended CompCertO is based on CompCert version 3.10.  It is located
+in the [DirectRefinement](DirectRefinement) directory along with
+several examples that demonstrate the effectiveness of the extension
+in end-to-end program verification. For comparison, we also upload a
+copy of [CompCertO](CompCertOv3.10). This artifact accompanies the
+following paper:
 
 > [*Fully Composable and Adequate Verified Compilation with Direct Refinements between
 Open Modules*](paper/direct-refinement.pdf). Ling Zhang, Yuting Wang, Jinhua Wu, Jeremie
 Koenig and Zhong Shao
 
 
-## List of technical claims
+## List of Claims
 
-Since our artifact is mainly Coq proofs, here we only list the *technical claims* 
-made in the paper. We will demonstrate the structure of Coq proofs
-following the structure of the paper in the last section.
-
-For the technical claims made in our paper, please refer to the source files in the 
-[DirectRefinement](DirectRefinement) directory.
+Since our paper is about compiler verification, the claims we make are
+mainly in the form of definitions, lemmas and theorems. We list the
+claims made in each section of the paper below along with the
+references to their corresponding Coq formalization in the artifact. A
+more organized and complete explanation of the Coq formalization is
+located in the section "Structure of Formal Proofs" below.
 
 ### Section 2
-- The simulation convention $\mathbb{C}$ in Section 2.2 (line 450) of the paper corresponds to
-  the definition [cc_c_asm_injp](DirectRefinement/driver/CA.v#L184) in the Coq file
+- The simulation convention $\mathbb{C}$ for the direct refinement in
+  Section 2.2 (line 450) corresponds to the definition
+  [cc_c_asm_injp](DirectRefinement/driver/CA.v#L184) in the Coq file
   [driver/CA.v](DirectRefinement/driver/CA.v).
 
-- Theorem 2.3 from Section 2.4 (line 557) *provided in CompCertO* corresponds to the theorem
+- Theorem 2.3 in Section 2.4 (line 557) corresponds to the theorem
   [compose_fsim_components](DirectRefinement/common/Smallstep.v#L896) in the Coq file
-  [common/Smallstep.v](DirectRefinement/common/Smallstep.v).
+  [common/Smallstep.v](DirectRefinement/common/Smallstep.v). 
+  Note that this theorem is part of the background and has already been proved in CompCertO.
   
-- Theorem 2.4 from Section 2.4 (line 580) *provided in CompCertO* corresponds to the theorem
+- Theorem 2.4 from Section 2.4 (line 580) corresponds to the theorem
   [open_fsim_ccref](DirectRefinement/common/CallconvAlgebra.v#76) in the Coq file
   [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
+  Note that this theorem is part of the background and has already been proved in CompCertO.
   
 ### Section 3
 
