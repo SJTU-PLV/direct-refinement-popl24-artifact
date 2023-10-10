@@ -156,7 +156,7 @@ located in the section "Structure of the Formal Proofs" below.
 ## 3. Installation
 
 
-###  Requirements
+### 3.1. Requirements
 
 This artifact is based on the most recent version of CompCertO which
 is in turn based on CompCert v3.10. You can find the user manual of
@@ -182,7 +182,7 @@ We have tested the following building commands in the Linux shell (Ubuntu 22.04)
     # Configure the current shell to use the newly created opam switch
     eval $(opam env)
 ```
-### Instructions for compiling the Coq code
+### 3.2. Instructions for compiling the Coq code
 
 The Coq code is located in the `DirectRefinement` directory.
 First, you need to build a library named [Coqrel](https://github.com/CertiKOS/coqrel/tree/38dd003d28c91b1b93c01a160a31cdbc3348916a)),
@@ -207,7 +207,7 @@ The same instructions should be followed if you also want to compile
 the original CompCert in the directory `CompCertOv3.10`.
 
 
-### Navigating the proofs
+### 3.3. Navigating the proofs
 
 After that, you can navigate the source code by using
 [emacs](https://www.gnu.org/software/emacs/) with [proof-general](https://proofgeneral.github.io/doc/master/userman/Introducing-Proof-General/)
@@ -247,14 +247,14 @@ sudo make install
 
 ## 4. Evaluation of Soundness and Proof Effort
 
-### Soundness 
+### 4.1. Soundness 
 To check that there is no admit in the artifact, enter `DirectRefinement` and run
 ```
 find . -name "*.v" | xargs grep "Admitted"
 ```
 which should show no admit.
 
-### Proof effort
+### 4.2. Proof effort
 
 The following are the instructions for reproducing the lines of code (LOC) in 
 Table 3 (line 2255) of the [technical report](paper/technical-report.pdf).
@@ -341,21 +341,23 @@ The numbers in `Additions(+)` column is the result of subtracting column 2 from 
 
 ## 5. Structure of the Formal Proofs
 
-This artifact is based on CompCertO v3.10, you can browse the structure and
-source code of original CompCert [here](http://compcert.inria.fr/doc/index.html).
-Note that we use nominal memory model from Nominal CompCert[^1] in our implementation
-for future extensions, while our result does not rely on it.
+This artifact is based on CompCertO which is based on CompCert
+v3.10. For readers not familiar with CompCert, you can browse the
+structure and source code of original CompCert
+[here](http://compcert.inria.fr/doc/index.html). Note that the most
+recent version of CompCertO has incorporated the (bare-bones) nominal memory model
+from Nominal CompCert[^1]. This adoption only is orthogonal to our work.
 
 We demonstrate the formal proofs following the structure of our paper.
 We first briefly present the background from CompCertO as described in Section 2.1.
+(for CompCert's block-based memory model (Section 2.1.1), see 
+[common/Values.v](DirectRefinement/common/Values.v) and
+[common/Memory.v](DirectRefinement/common/Memory.v)).
 We then demonstrate the key definitions and theorems for building direct refinement (Section 3 and 4).
 Finally we discuss the examples of end-to-end verification using direct refinement (Section 5).
 
-For CompCert's block-based memory model (Section 2.1.1), see 
-[common/Values.v](DirectRefinement/common/Values.v) and
-[common/Memory.v](DirectRefinement/common/Memory.v).
 
-### CompCertO
+### 5.1. Background: CompCertO (Section 2)
 
 #### Open semantics 
 
@@ -388,7 +390,7 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
   [common/Smallstep.v](DirectRefinement/common/Smallstep.v). The core of it
   is `fsim_properties` which corresponds to Figure 5 (line 344) in the paper.
 
-#### Kripke Memory Relations
+#### Kripke memory relations
 
 - (Definition 2.1, line 411) *Kripke Memory Relation* is defined as `cklr` in 
   [cklr/CKLR.v](DirectRefinement/cklr/CKLR.v). Different memory relations
@@ -408,13 +410,13 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
     match_reply := (<> cc_c_reply R)%klr;
   |}.
   ```
-  If we use the same world `w` for `match_query` and `match_reply`, the symbol `<>` in
+  If we use the same world `w` for `match_query` and `match_reply`, the modal operator `<>` in
   `match_reply` indicates that there exists an accessibility relation of worlds from 
-  queries to replies. `<>` is the notation of `klr_diam` in 
+  queries to replies. `<>` is formalized as `klr_diam` in 
   [coqrel/KLR.v](DirectRefinement/coqrel/KLR.v)
 
 
-#### Vertical Composition of simulations
+#### Vertical composition of simulations
 
 - Theorem 2.3 from Section 2.4 (line 557) corresponds to the theorem `compose_forward_simulations`
   in the Coq file [common/Smallstep.v](DirectRefinement/common/Smallstep.v).
@@ -432,7 +434,7 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 -  Theorem 2.4 (line 580) is defined as `open_fsim_ccref` in 
    [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
 
-#### Kripke Relation with Memory Protection (`injp`)
+#### Kripke memory relation `injp`
 
 - (Definition 2.2, line 417) The definition of `injp` can be found in 
   [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v):
@@ -448,7 +450,7 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
     |}.
 	```
 
-- The `injp` accessibility is defined as `injp_acc` in the same file:
+- The accessibility of `injp` is defined as `injp_acc` in the same file:
 	```
     Inductive injp_acc: relation injp_world :=
       injp_acc_intro f m1 m2 Hm f' m1' m2' Hm':
@@ -461,7 +463,7 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 		inject_separated f f' m1 m2 ->
 		injp_acc (injpw f m1 m2 Hm) (injpw f' m1' m2' Hm').
 	```
-	Note that *mem-acc(m,m')* mentioned in the paper (line 422) is summarized as definition
+	Note that *mem-acc(m,m')* mentioned in the paper (line 422) is formalized as definition
 	`ro_acc` in [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
    ```
    Inductive ro_acc : mem -> mem -> Prop :=
@@ -471,24 +473,20 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
       injp_max_perm_decrease m1 m2 -> (*ec_perm*)
 	  ro_acc m1 m2.
   ```
-  These properties of are defined by vanilla CompCert in 
-  [common/Events.v](DirectRefinement/common/Events.v) as `ec_readonly`, `ec_valid_block`
-  and `ec_perm` for external calls. We use them together as a
-  preorder relation for memory transformation during both internal and external executions.
-  
-  The *unchanged-on* (line 424) is defined as `unchanged_on` in
+  The properties `Mem.ro_unchanged`, `Mem.sup_include` and `injp_max_perm_decrease` are already present in the vanilla CompCert in 
+  [common/Events.v](DirectRefinement/common/Events.v) as properties `ec_readonly`, `ec_valid_block`
+  and `ec_perm` for external calls. 
+  The *unchanged-on* relation (line 424) is defined as `unchanged_on` in
   [common/Memory.v](DirectRefinement/common/Memory.v).
-  Note that `Mem_sup_include (Mem.support m1) (Mem.support m2)` which means that
-  `m2` have more valid blocks than `m1` is included in 
-  `Mem.unchanged_on P m1 m2`. Therefore all three properties of `ro_acc m1 m1'` are
-  included in `injp_acc` as we defined in the paper.
+  Note that `Mem_sup_include (Mem.support m1) (Mem.support m2)` is included in the definition of
+  `Mem.unchanged_on P m1 m2`. Therefore all the three properties of `ro_acc` are
+  present in the definition of `injp_acc` and together denote *mem-acc* in our paper.
 
 
-### `injp` transitivity (Section 3)
-The proof of `injp` transitivity in 
-[cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v) is commented according
-to the appendix C of our [technical report](paper/technical-report.pdf).
-The refinements (Lemma 3.1 and Lemma 3.2) correspond to the following lemmas:
+### 5.2. Transitivity of `injp` (Section 3)
+The proof of transitivity of `injp` is located in
+[cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v). 
+The refinements in both directions (Lemma 3.1 and Lemma 3.2) are formalized as:
 ```
 Lemma injp_injp2:
   subcklr (injp @ injp) injp.
@@ -496,63 +494,67 @@ Lemma injp_injp:
   subcklr injp (injp @ injp).
 ```
 
-Here `subcklr` is the refinement of kripke memory relations. The lemma
+Here, `subcklr` denotes the refinement of Kripke memory relations. The lemma
 `cc_c_ref` in [cklr/CKLRAlgebra.v](DirectRefinement/cklr/CKLRAlgebra.v)
-can turn `subcklr R S` into the refinement of simulation conventions
-`ccref (cc_c R) (cc_c S)`. Similar lemma `cc_asm_ref` for `cc_asm` is defined
+converts `subcklr R S` into the refinement of simulation conventions
+`ccref (cc_c R) (cc_c S)` at C level. A similar lemma `cc_asm_ref` for `cc_asm` is defined
 in [x86/Asm.v](DirectRefinement/x86/Asm.v).
 
-Here we briefly present the construction of intermediate memory state
-(as discussed in the paper line 738-753) as following steps. 
-We first construct the injections and shape of `m2'` using
+We briefly discuss the steps for constructing interpolating memory state
+(as discussed in the paper line 738-753).
+The first step is to construct the injections and shape of `m2'` using
 the operation `update_meminj12` defined in 
 [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v).
 
-We then copy the values and permissions for newly allocated blocks as:
+Then, the values and permissions for newly allocated blocks are copied as:
 
 ```
 Definition m2'1 := Mem.step2 m1 m2 m1' s2' j1'.
 ```
-Finally we update the values and permissions for old blocks:
+Finally, the values and permissions for old blocks are updated:
 
 ```
 Definition m2' := Mem.copy_sup m1 m2 m1' j1 j2 j1' INJ12 (Mem.support m2) m2'1.
 ```
 
-These memory operations are defined in [common/Memory.v](DirectRefinement/common/Memory.v).
-For these operations, we changed the type of `mem_access` to be the same structure as
-`mem_contents` in order to enumerate the valid (with nonempty permissions)
+These memory operations are defined in
+[common/Memory.v](DirectRefinement/common/Memory.v).  A problem with
+the memory model of CompCert is that there is no way to get the
+footprint of permissions because the permissions for memory locations
+are stored as a function (in field `mem_access`). To solve this problem, we changed 
+the type of `mem_access` into a tree data structure, so that we can enumerate the valid (with nonempty permissions)
 locations of a memory block.
 ```
 Record mem' : Type := mkmem {
   ...
-  (* old implementation *)
-  (* mem_access: NMap.t (Z -> perm_kind -> option permission); *)
-  mem_access: NMap.t (ZMap.t memperm);
+  (* mem_access: NMap.t (Z -> perm_kind -> option permission); *)    (* old implementation *)
+  mem_access: NMap.t (ZMap.t memperm);                               (* new implementation *)
   ...
 }
 ```
 Given the transivity of `injp` as depicted in Figure 10 (line 599), we are able to
 achieve the "real" vertical composition of open simulations as depicted in Figure 9 (line 589).
 
-### Derivation of direct Refinement (Section 4)
+### 5.3. Derivation of direct refinement (Section 4)
 
 #### Proofs of individual passes
 
-- Table 1 can be checked according to `CompCertO's_passes` in 
-  [driver/Compiler.v](DirectRefinement/driver/Compiler.v). 
-  The definitions used in the table from CompCertO can be found as follows.
-  The simulation conventions between the same language interfaces 
-  `cc_c`, `cc_locset`, `cc_mach` and `cc_asm` (line 813) are defined in 
-  in [common/Languageinterface.v](DirectRefinement/common/LanguageInterface.v),
+- Table 1 can be checked against `CompCertO's_passes` in
+  [driver/Compiler.v](DirectRefinement/driver/Compiler.v).  The
+  definitions used in the table can be located as follows.  The
+  simulation conventions between the same language interfaces `cc_c`,
+  `cc_locset`, `cc_mach` and `cc_asm` (line 813) are defined in in
+  [common/Languageinterface.v](DirectRefinement/common/LanguageInterface.v),
   [backend/Conventions](DirectRefinement/backend/Conventions.v),
   [backend/Mach.v](DirectRefinement/backend/Mach.v) and
-  [x86/Asm.v](DirectRefinement/x86/Asm.v).
-  The structure simulation conventions `cc_c_locset`, `cc_locset_mach` and
-  `cc_mach_asm` (line 823) are defined in 
+  [x86/Asm.v](DirectRefinement/x86/Asm.v).  The structure simulation
+  conventions `cc_c_locset`, `cc_locset_mach` and `cc_mach_asm` (line
+  823) are defined in
   [backend/Conventions](DirectRefinement/backend/Conventions.v),
   [driver/CallConv.v](DirectRefinement/driver/CallConv.v) and
-  [x86/Asm.v](DirectRefinement/x86/Asm.v). 
+  [x86/Asm.v](DirectRefinement/x86/Asm.v).  Note that all those
+  definitions already exist in the original CompCertO; we simply use them as
+  they are.
   
 - The *semantic invariant* is defined as `invariant` in
   [common/Invariant.v](DirectRefinement/common/Invairant.v):
@@ -567,7 +569,7 @@ Record invariant {li: language_interface} :=
   }.
 ```
 
-For the passes using static analysis, we define the invariant `ro` in
+For the passes using static analysis, we invented a new invariant `ro` in
 [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
 ```
 Definition ro : invariant li_c :=
@@ -578,23 +580,20 @@ Definition ro : invariant li_c :=
   |}.
 ```
 
-The proof which uses `injp` to guarantee the dynamic values of
+The proof which uses `injp` to protect the values of
 unreachable local variables (Fig. 14) is carried out in the lemma
  `transf_external_states` in 
 [backend/Constpropproof.v](DirectRefinement/backend/Constpropproof.v).
+
 The same theorems and similar proofs can be found in
 [backend/CSEproof.v](DirectRefinement/backend/CSEproof.v) and
 [backend/Deadcodeproof.v](DirectRefinement/backend/Deadcodeproof.v).
 
-
-For [Unusedglob](DirectRefinement/backend/Unusedglobproof.v) pass,
-we assume that the global symbol table are the same for source and target
-semantics. While some local static definitions are removed. 
-
-Moreover, We use `injp` in the incoming simulation convention in
-[cfrontend/SimplLocalsproof.v](DirectRefinement/cfrontend/SimplLocalsproof.v)
-as an example to show that `injp` is a reasonable guarantee condition. 
-The proofs of remaining passes are unchanged from CompCertO.
+For [Unusedglob](DirectRefinement/backend/Unusedglobproof.v) pass, we
+allowing for local static definitions to be removed while retaining
+their symbols. That is, we assume the global symbol tables are the same
+for source and target semantics which enables us to use `inj` instead
+of `injp` as its KMR.
 
 #### Unification of the simulation conventions
 
@@ -678,7 +677,7 @@ Theorem clight_semantic_preservation:
   forward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp)
   /\ backward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp).
 ```
-### End-to-End Verification of Heterogeneous Modules (Section 5)
+### 5.4. End-to-end verification of heterogeneous modules (Section 5)
 
 In the section 5 of the paper, we introduce the end-to-end
 verification of the client-server example based on the direct
@@ -686,7 +685,7 @@ refinement. We first give the definitions of the C and assembly code
 of our example, and then follow the Figure 4 to give the overview of
 the refinement proof.
 
-#### Definitions of the Client-Server Example
+#### Definitions of the client-server example
 
 The C or assembly code of `client.c`, `server.s` and `server_opt.s`
 are shown in Figure 3 in our paper.
@@ -694,7 +693,7 @@ are shown in Figure 3 in our paper.
 * `client.c` is defined in [demo/Client.v](DirectRefinement/demo/Client.v).
 * `server.s` and `server_opt.s` are defined in [demo/Server.v](DirectRefinement/demo/Server.v).
 
-#### Refinement for the Hand-written Server (Section 5.1)
+#### Refinement for the hand-written server (Section 5.1)
 
 First, we show the refinement between the specification of
 `server_opt.s` (i.e., `L_s` in our paper) and the semantics of
@@ -715,7 +714,7 @@ First, we show the refinement between the specification of
   For the proof of `CAinjp_simulation_L2`, the simulation relation is defined by [match_state_c_asm](DirectRefinement/demo/Serverproof.v#L42).
   
 
-#### End-to-End Correctness Theorem (Section 5.2)
+#### End-to-end correctness theorem (Section 5.2)
 
 In this section, we first show the refinement between the top-level
 specification (`L_cs`) and the composition of `client.c` and
@@ -763,7 +762,7 @@ compositionality to establish the end-to-end refinement.
   Theorem spec_sim_2 : forward_simulation cc_compcert cc_compcert top_spec2 (Asm.semantics tp2).
   ```
   
-#### Other Examples
+#### Other examples
 
 The following examples are not discussed in our paper, because they
 are more complicated than the client-server example introduced in our
