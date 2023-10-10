@@ -17,11 +17,11 @@ copy of CompCertO in the directory
 Open Modules*](paper/direct-refinement.pdf). Ling Zhang, Yuting Wang, Jinhua Wu, Jeremie
 Koenig and Zhong Shao
 
-If you are on the root page of our github 
-[repository](https://github.com/SJTU-PLV/direct-refinement-popl24-artifact), some
-relative links may lead to "Not Found" pages. Please read this file 
-[here](https://github.com/SJTU-PLV/direct-refinement-popl24-artifact/blob/main/README.md)
-to ensure that the links work properly.
+**Notice**: if you are on [the main page](https://github.com/SJTU-PLV/direct-refinement-popl24-artifact)
+of this github repository, some
+hyperlinks may lead to "Not Found" errors. Please navigate the README.md file 
+[directly](https://github.com/SJTU-PLV/direct-refinement-popl24-artifact/blob/main/README.md)
+to ensure that the hyperlinks work properly.
 
 ## 2. List of Claims
 
@@ -46,7 +46,7 @@ located in the section "Structure of the Formal Proofs" below.
 - Theorem 2.4 from Section 2.4 (line 580) corresponds to the theorem
   [open_fsim_ccref](./DirectRefinement/common/CallconvAlgebra.v#L76) in the Coq file
   [common/CallconvAlgebra.v](./DirectRefinement/common/CallconvAlgebra.v).
-  Note that this theorem is part of the background and has already been proved in CompCertO.
+  Note that this theorem also has already been proved in CompCertO.
   
 ### Section 3
 
@@ -61,9 +61,9 @@ located in the section "Structure of the Formal Proofs" below.
 - Lemma 4.1 from Section 4.1.2 (line 861) corresponds to the theorem 
   [transf_program_correct](DirectRefinement/backend/Constpropproof.v#L1097) in the
   Coq file [backend/Constpropproof.v](DirectRefinement/backend/Constpropproof.v).
-  Similar correctness theorems for other changed passes in Table 1 
-  (`CSE`, `DeadCode` and `Unusedglob`) have the same name.
-  They can be found in [backend/CSEproof.v](DirectRefinement/backend/CSEproof.v),
+  The correctness theorems for the other changed optimization passes in Table 1 
+  (i.e., `CSE`, `DeadCode` and `Unusedglob`) have the same name and
+  can be found in [backend/CSEproof.v](DirectRefinement/backend/CSEproof.v),
   [backend/Deadcodeproof.v](DirectRefinement/backend/Deadcodeproof.v) and
   [backend/Unusedglobproof.v](DirectRefinement/backend/Unusedglobproof.v).
   Note that the correctness of `Deadcode` pass need further refinement
@@ -72,7 +72,7 @@ located in the section "Structure of the Formal Proofs" below.
 - Definition 4.2 from Section 4.1.2 (line 874) can be found in
   [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v#L1939).
 
-- Lemma 4.3 *provided by CompCertO* from Section 4.2.1 (line 919) corresponds to the instances 
+- Lemma 4.3 from Section 4.2.1 (line 919) corresponds to the instances 
   [commut_c_locset](DirectRefinement/driver/CallConv.v#L145), 
   [commut_locset_mach](DirectRefinement/driver/CallConv.v#L1091) and 
   [commut_mach_asm](DirectRefinement/driver/CallConv.v#L247) in 
@@ -109,7 +109,7 @@ located in the section "Structure of the Formal Proofs" below.
   [cklr/RTLrel.v](DirectRefinement/cklr/RTLrel.v#L271) and 
   [x86/Asmrel.v](DirectRefinement/x86/Asmrel.v#L513).
   
-- The direct refinement convention (line 973) is defined as 
+- The simulation convention for the direct refinement (line 973) is defined as 
   [cc_compcert](DirectRefinement/driver/Compiler.v#L399) in the Coq file 
   [driver/Compiler.v](DirectRefinement/driver/Compiler.v). 
   
@@ -118,7 +118,7 @@ located in the section "Structure of the Formal Proofs" below.
 
 - The unification of simulation conventions at the outgoing side (line 993-1005)
   is carried out by theorems in the Coq file [driver/Compiler.v](DirectRefinement/driver/Compiler.v).
-  We will discuss this later in the `Structure of formal proofs` section.
+  Unification of conventions for the incoming side is also carried out in this file.
 
 ### Section 5
 
@@ -129,11 +129,13 @@ located in the section "Structure of the Formal Proofs" below.
   [semantics_preservation_L2](DirectRefinement/demo/Serverproof.v#L1581) in 
   [demo/Serverproof.v](DirectRefinement/demo/Serverproof.v).
 
-- Lemma 5.3 from Section 5.2 (line 1088) is defined is the vertical composition of theorems
+- Lemma 5.3 from Section 5.2 (line 1088) is the vertical composition of theorems
   [top2_ro](DirectRefinement/demo/ClientServerCspec2.v#L211), 
   [top2_wt](DirectRefinement/demo/ClientServerCspec2.v#L234) and 
   [top_simulation_L2](DirectRefinement/demo/ClientServerCspec2.v#L832) in the Coq file 
   [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v).
+  Note that it is only an intermediate step for end-to-end refinement, therefore no literal
+  correspondence in Coq.
 
 - Theorem 5.4 (line 1097) corresponds to the lemmas
   [compose_simulation](DirectRefinement/common/SmallstepLinking.v#L338) in
@@ -153,9 +155,14 @@ located in the section "Structure of the Formal Proofs" below.
   
 ### Section 6
 
-- The claim "We added 15k lines of code on top of CompCertO" form Section 6 (line 1114)
-  is checked by `coqwc`. We add some theorems for readability after the submission.
-  See the `Evaluation of soundness and proof effort` section.
+- We claim that we have added 15k lines of code (LoC) on top of
+  CompCertO in Section 6 (line 1114).  In this final artifact, we have
+  revised the code for better readability, and more importantly, added
+  a new example that demonstrates how direct refinement enables mutual
+  recursion in the client-server problem. These changes amount to
+  about 3k LoC.  Therefore, the total amount of Coq is about 18k LoC.
+  The details are discussed in the section "Evaluation of Soundness
+  and Proof Effort" below.
   
 
 ## 3. Installation
@@ -172,7 +179,7 @@ virtual machine.
 
 - If you prefer to compile the source code on your own computer, then
 we recommend using the `opam` package manager to set up a build environment in Linux. 
-We have tested the following building commands in the Linux shell (Ubuntu 22.04).
+We have tested the following build commands in the Linux shell (Ubuntu 22.04).
 ```
     # Initialize opam (if you haven't used it before)
     opam init --bare
@@ -262,7 +269,8 @@ which should show no admit.
 ### 4.2. Proof effort
 
 The following are the instructions for reproducing the lines of code (LOC) in 
-Table 3 (line 2255) of the [technical report](paper/technical-report.pdf).
+Table 3 (line 2255) of the [technical report](paper/technical-report.pdf). Note that
+in our final artifact we have a total of 18k LoC.
 
 #### Column 2
 
@@ -302,26 +310,6 @@ and add the `spec` and `proof` of the last row.
 2014     5315      770 total # 7329
 ```
 
-Note that this result contains all the statistic of client-server
-examples (including optimized server and unoptimized server) we
-developed. The statistic shown in our submitted paper only contains
-the example with optimized server. For completeness, the statistic in
-our submitted technical report (Client-Server row in Table 3) is
-obtained by the following command (removing `ClientServerCspec.v` and
-`ClientServerMRCSpec.v`):
-
-```
-coqwc demo/Client.v demo/Server.v demo/Serverspec.v demo/Serverproof.v demo/ClientServerCspec2.v demo/ClientMR.v demo/ClientServerMRCSpec2.v demo/ClientServer.v
-```
-the result is:
-```
-1345     3327      483 total #4672
-```
-
-Note that there is a slightly difference (about 40 lines) from the
-Client-Server row in Table 3 because we added some code in
-`demo/ClientServer.v`.
-
 For the Mutual Sum example, run
 ```
 coqwc demo/Demo.v demo/Demospec.v demo/Demoproof.v demo/DemoCspec.v demo/Demotopspec.v
@@ -331,14 +319,13 @@ and add the `spec` and `proof` of the last row.
 880     2248      231 total # 3128
 ```
 
-
 In our submitted paper (line 1114), we claimed we added 15k lines of
-code on top of CompCertO. This result is calculated by `23838 + 4672 +
-3128 = 31638; 31638 - 15925 (CompCertO) = 15731`. In our final
-development, we implemented all the examples. Therefore, the total
-statistic of the development is `23838 + 7329 + 3128 = 34295`. The
-additions should change to  `34295 - 15925 = 18370` (i.e., about 18k
-lines of code).
+code on top of CompCertO. In our final development, we have made
+additional modification and added an example of client-server
+supporting mutual recursion (see the section "Additional
+examples" below). Therefore, the total statistic of the development is
+`23838 + 7329 + 3128 = 34295`. The additions is `34295 -
+15925 = 18370` (i.e., about 18k lines of code).
 
 #### Column 4
 The numbers in `Additions(+)` column is the result of subtracting column 2 from column 3.
