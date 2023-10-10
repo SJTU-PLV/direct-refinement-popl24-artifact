@@ -130,7 +130,7 @@ located in the section "Structure of the Formal Proofs" below.
   [top_simulation_L2](DirectRefinement/demo/ClientServerCspec2.v#L832) in the Coq file 
   [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v).
 
-- Theorem 5.4 (line 1097) corresponds to the lemma 
+- Theorem 5.4 (line 1097) corresponds to the lemmas
   [compose_simulation](DirectRefinement/common/SmallstepLinking.v#L338) in
   [common/SmallstepLinking.v](DirectRefinement/common/SmallstepLinking.v) and
   [asm_linking](DirectRefinement/x86/AsmLinking.v#L371) in 
