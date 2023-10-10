@@ -78,7 +78,7 @@ located in the section "Structure of the Formal Proofs" below.
     the Coq file [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v). 
   + property (2) is [sub_inj_injp](DirectRefinement/cklr/InjectFootprint.v#L2560) in
     the same file.
-  + property (3) is [injp__injp_injp_injp](DirectRefinement/cklr/InjectFootprint.v#L2606)
+  + property (3) is [injp__injp_inj_injp](DirectRefinement/cklr/InjectFootprint.v#L2606)
 	in the same file.
   + property (4) is [inj_inj](DirectRefinement/cklr/Inject.v#L500) in the Coq file
   [cklr/Inject.v](DirectRefinement/cklr/Inject.v).
@@ -95,9 +95,8 @@ located in the section "Structure of the Formal Proofs" below.
 - Lemma 4.6 (line 950) corresponds to the theorem 
   [ro_injp_trans](DirectRefinement/driver/CallConv.v#L1779) in the same file. 
 
-- Lemma 4.7 (line 956) is an instantiation of theorems 
-  [inv_commute](DirectRefinement/common/Invariant.v#L380) and 
-  [inv_commute_ref](DirectRefinement/common/Invariant.v#L370) in 
+- Lemma 4.7 (line 956) is an instantiation of theorem 
+  [inv_commute](DirectRefinement/common/Invariant.v#L380) in 
   [common/Invariant.v](DirectRefinement/common/Invariant.v).
 
 - Theorem 4.8 from Section 4.3 (line 963) corresponds to the final theorems
@@ -125,13 +124,15 @@ located in the section "Structure of the Formal Proofs" below.
   [semantics_preservation_L2](DirectRefinement/demo/Serverproof.v#L1581) in 
   [demo/Serverproof.v](DirectRefinement/demo/Serverproof.v).
 
-- Lemma 5.3 from Section 5.2 (line 1087) is defined is the vertical composition of theorems
+- Lemma 5.3 from Section 5.2 (line 1088) is defined is the vertical composition of theorems
   [top2_ro](DirectRefinement/demo/ClientServerCspec2.v#L211), 
   [top2_wt](DirectRefinement/demo/ClientServerCspec2.v#L234) and 
   [top_simulation_L2](DirectRefinement/demo/ClientServerCspec2.v#L832) in the Coq file 
   [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v).
 
 - Theorem 5.4 (line 1097) corresponds to the lemma 
+  [compose_simulation](DirectRefinement/common/SmallstepLinking.v#L338) in
+  [common/SmallstepLinking.v](DirectRefinement/common/SmallstepLinking.v) and
   [asm_linking](DirectRefinement/x86/AsmLinking.v#L371) in 
   [x86/AsmLinking.v](DirectRefinement/x86/AsmLinking.v).
 
