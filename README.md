@@ -301,9 +301,9 @@ Note that this result contains all the statistic of client-server
 examples (including optimized server and unoptimized server) we
 developed. The statistic shown in our submitted paper only contains
 the example with optimized server. For completeness, the statistic in
-our submitted paper (Client-Server row in Table 3 of the technical
-report) is obtained by the following command (removing
-`ClientServerCspec.v` and `ClientServerMRCSpec.v`):
+our submitted technical report (Client-Server row in Table 3) is
+obtained by the following command (removing `ClientServerCspec.v` and
+`ClientServerMRCSpec.v`):
 
 ```
 coqwc demo/Client.v demo/Server.v demo/Serverspec.v demo/Serverproof.v demo/ClientServerCspec2.v demo/ClientMR.v demo/ClientServerMRCSpec2.v demo/ClientServer.v
@@ -331,7 +331,9 @@ In our submitted paper (line 1114), we claimed we added 15k lines of
 code on top of CompCertO. This result is calculated by `23838 + 4672 +
 3128 = 31638; 31638 - 15925 (CompCertO) = 15731`. In our final
 development, we implemented all the examples. Therefore, the total
-statistic of the development is `23838 + 7329 + 3128 = 34295`.
+statistic of the development is `23838 + 7329 + 3128 = 34295`. The
+additions should change to  `34295 - 15925 = 18370` (i.e., about 18k
+lines of code).
 
 #### Column 4
 The numbers in `Additions(+)` column is the result of subtracting column 2 from column 3.
