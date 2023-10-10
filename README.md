@@ -341,7 +341,7 @@ recent version of CompCertO has incorporated the (bare-bones) nominal memory mod
 from Nominal CompCert[^1]. This adoption only is orthogonal to our work.
 
 We demonstrate the formal proofs following the structure of our paper.
-We first briefly present the background from CompCertO as described in Section 2.1.
+We first briefly present the background from CompCertO as described in Section 2.1 and Section 2.4.
 (for CompCert's block-based memory model (Section 2.1.1), see 
 [common/Values.v](DirectRefinement/common/Values.v) and
 [common/Memory.v](DirectRefinement/common/Memory.v)).
@@ -407,25 +407,6 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
   queries to replies. `<>` is formalized as `klr_diam` in 
   [coqrel/KLR.v](DirectRefinement/coqrel/KLR.v)
 
-
-#### Vertical composition of simulations
-
-- Theorem 2.3 from Section 2.4 (line 557) corresponds to the theorem `compose_forward_simulations`
-  in the Coq file [common/Smallstep.v](DirectRefinement/common/Smallstep.v).
-  
-- The composition of simulation conventions (line 561) is defined as `cc_compose` in
-  [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v).
-  
-#### Refinement of calling conventions
-
--  The refinement of simulation conventions (line 571-572) is defined as `ccref` 
-   in [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
-   Note that $`\mathbb{R} \sqsubseteq \mathbb{S}`$ corresponds to `ccref S R`.
-   The equivalence is defined as `cceqv` in the same file.
-
--  Theorem 2.4 (line 580) is defined as `open_fsim_ccref` in 
-   [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
-
 #### Kripke memory relation `injp`
 
 - (Definition 2.2, line 417) The definition of `injp` can be found in 
@@ -475,6 +456,38 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
   present in the definition of `injp_acc` and together denote *mem-acc* in our paper.
 
 
+#### Vertical composition of simulations
+
+- Theorem 2.3 from Section 2.4 (line 557) corresponds to the theorem `compose_forward_simulations`
+  in the Coq file [common/Smallstep.v](DirectRefinement/common/Smallstep.v).
+  
+- The composition of simulation conventions (line 561) is defined as `cc_compose` in
+  [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v).
+  
+#### Refinement of calling conventions
+
+-  The refinement of simulation conventions (line 571-572) is defined as `ccref` 
+   in [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
+   Note that $`\mathbb{R} \sqsubseteq \mathbb{S}`$ corresponds to `ccref S R`.
+   The equivalence is defined as `cceqv` in the same file.
+
+-  Theorem 2.4 (line 580) is defined as `open_fsim_ccref` in 
+   [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
+
+#### Refinement of kripke memory relations
+
+- The refinement of kripke memory relations (line 620-622) is defined as `subcklr`
+  in [cklr/CKLRAlgebra.v](DirectRefinement/cklr/CKLRAlgebra.v). Similarly
+  $`K \sqsubseteq L`$ corresponds to `subcklr L K`. The equivalence is defined
+  as `eqcklr` in the same file.
+  
+- Showing the refinement of simulation conventions from the refinement over
+  parameterizing KMRs (line 624-626) corresponds to the lemma
+  `cc_c_ref` in [cklr/CKLRAlgebra.v](DirectRefinement/cklr/CKLRAlgebra.v) for
+  simulation conventions at C level `cc_c`. A similar lemma `cc_asm_ref` for
+  simulation conventions at Asm level is defined in 
+  [x86/Asm.v](DirectRefinement/x86/Asm.v).
+
 ### 5.2. Transitivity of `injp` (Section 3)
 The proof of transitivity of `injp` is located in
 [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v). 
@@ -485,12 +498,6 @@ Lemma injp_injp2:
 Lemma injp_injp:
   subcklr injp (injp @ injp).
 ```
-
-Here, `subcklr` denotes the refinement of Kripke memory relations (line 620-622). The lemma
-`cc_c_ref` in [cklr/CKLRAlgebra.v](DirectRefinement/cklr/CKLRAlgebra.v)
-converts `subcklr R S` into the refinement of simulation conventions
-`ccref (cc_c R) (cc_c S)` at C level. A similar lemma `cc_asm_ref` for simulation conventions
-at Asm level is defined in [x86/Asm.v](DirectRefinement/x86/Asm.v).
 
 We briefly discuss the steps for constructing interpolating memory state
 (as discussed in the paper line 738-753).
