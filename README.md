@@ -479,9 +479,9 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 -  Theorem 2.4 (line 580) is defined as `open_fsim_ccref` in 
    [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
 
-#### Refinement of kripke memory relations
+#### Refinement of Kripke memory relations
 
-- The refinement of kripke memory relations (line 620-622) is defined as `subcklr`
+- The refinement of Kripke memory relations (line 620-622) is defined as `subcklr`
   in [cklr/CKLRAlgebra.v](DirectRefinement/cklr/CKLRAlgebra.v). That is,
   $`K \sqsubseteq L`$ corresponds to `subcklr L K`. The equivalence is defined
   as `eqcklr` in the same file.
@@ -574,7 +574,7 @@ Record invariant {li: language_interface} :=
   }.
 ```
 
-(Defintion 4.2, line 874) For the passes using static analysis, we invented a new
+(Definition 4.2, line 874) For the passes using static analysis, we invented a new
 invariant `ro` in [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
 ```
 Definition ro : invariant li_c :=
