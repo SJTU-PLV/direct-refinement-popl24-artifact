@@ -218,6 +218,7 @@ it takes about 20 minutes.
 The same instructions should be followed if you also want to compile
 the original CompCert in the directory `CompCertOv3.10`.
 
+You can run `make clean` to clean up the compiled code.
 
 ### 3.3. Navigating the proofs
 
@@ -338,15 +339,19 @@ v3.10. For readers not familiar with CompCert, you can browse the
 structure and source code of original CompCert
 [here](http://compcert.inria.fr/doc/index.html). Note that the most
 recent version of CompCertO has incorporated the (bare-bones) nominal memory model
-from Nominal CompCert[^1]. This adoption only is orthogonal to our work.
+from Nominal CompCert[^1]. This adoption is orthogonal to our work.
 
-We demonstrate the formal proofs following the structure of our paper.
-We first briefly present the background from CompCertO as described in Section 2.1 and Section 2.4.
+We introduce the formal proofs mostly following the structure of our
+paper. A notable difference is that the formalized definition of
+direct refinement is introduced much later (at the end of 5.3)
+because the proofs are introduced in a bottom-up fashion.
+
+Below we first briefly present the background of CompCertO as described in Section 2.1.
 (for CompCert's block-based memory model (Section 2.1.1), see 
 [common/Values.v](DirectRefinement/common/Values.v) and
 [common/Memory.v](DirectRefinement/common/Memory.v)).
-We then demonstrate the key definitions and theorems for building direct refinement (Section 3 and 4).
-Finally we discuss the examples of end-to-end verification using direct refinement (Section 5).
+We then demonstrate the key definitions and theorems for building the direct refinement (Section 3 and 4).
+Finally we discuss the examples of end-to-end verification using the direct refinement (Section 5).
 
 
 ### 5.1. Background: CompCertO (Section 2)
