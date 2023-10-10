@@ -681,7 +681,7 @@ First, we show the refinement between the specification of
   This proof is decomposed into
   [self_simulation_wt](DirectRefinement/demo/Serverproof.v#L1533) and
   [CAinjp_simulation_L2](DirectRefinement/demo/Serverproof.v#L1089) in the same file.
-  For the proof of `CAinjp_simulation_L2`, the simulation relation is defined by [match_state_c_asm](DirectRefinement/demo/Serverproof.v#42).
+  For the proof of `CAinjp_simulation_L2`, the simulation relation is defined by [match_state_c_asm](DirectRefinement/demo/Serverproof.v#L42).
   
 
 #### End-to-End Correctness Theorem (Section 5.2)
@@ -691,14 +691,14 @@ specification ($`L_{CS}`$) and the composition of `client.c` and
 $`L_S`$. And then we use the correctness of the compiler and vertical
 compositionality to establish the end-to-end refinement.
 
-* Definition of the top-level specification (for optimized server `server_opt.s`) $L_{CS}$ is `top_spec2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](DirectRefinement/demo/ClientServerCspec.v#L136).
+* Definition of the top-level specification (for optimized server `server_opt.s`) $L_{CS}$ is `top_spec2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#L138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](DirectRefinement/demo/ClientServerCspec.v#L136).
 * (Lemma 5.3) It is defined by `top_simulation_L2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#L832). 
   ```
   Lemma top_simulation_L2:
     forward_simulation (cc_c injp) (cc_c injp) top_spec2 composed_spec2.
   ```
   The simulation relation is defined by
-  [match_state](DirectRefinement/demo/ClientServerCspec2.v#254) in the same file. For
+  [match_state](DirectRefinement/demo/ClientServerCspec2.v#L254) in the same file. For
   the same theorem for unoptimized server, we define it in
   [top_simulation_L1](DirectRefinement/demo/ClientServerCspec.v#L136).
 
@@ -788,7 +788,7 @@ void request (int *r){
   specification is self-simulated by `ro` and `wt`. They are defined
   by `top1_ro` and `top1_wt` in [demo/ClientServerMRCspec.v](DirectRefinement/demo/ClientServerMRCSpec.v).
 * The direct refinement of this example is defined by `spec_sim_mr` in
-  [demo/ClientServer.v](DirectRefinement/demo/ClientServer.v#233).
+  [demo/ClientServer.v](DirectRefinement/demo/ClientServer.v#L233).
   ```
   Theorem spec_sim_mr : forward_simulation cc_compcert cc_compcert (top_spec1 N) (Asm.semantics tp1).
   ```
