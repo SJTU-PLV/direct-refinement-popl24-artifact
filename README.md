@@ -288,6 +288,7 @@ The last row of result should be
 ```
 
 For the Client-Server example, run
+
 ```
 coqwc demo/Client.v demo/Server.v demo/Serverspec.v demo/Serverproof.v demo/ClientServerCspec.v demo/ClientServerCspec2.v demo/ClientMR.v demo/ClientServerMRCSpec.v demo/ClientServerMRCSpec2.v demo/ClientServer.v 
 ```
@@ -295,6 +296,26 @@ and add the `spec` and `proof` of the last row.
 ```
 2014     5315      770 total # 7329
 ```
+
+Note that this result contains all the statistic of client-server
+examples (including optimized server and unoptimized server) we
+developed. The statistic shown in our submitted paper only contains
+the example with optimized server. For completeness, the statistic in
+our submitted paper (Client-Server row in Table 3 of the technical
+report) is obtained by the following command (removing
+`ClientServerCspec.v` and `ClientServerMRCSpec.v`):
+
+```
+coqwc demo/Client.v demo/Server.v demo/Serverspec.v demo/Serverproof.v demo/ClientServerCspec2.v demo/ClientMR.v demo/ClientServerMRCSpec2.v demo/ClientServer.v
+```
+the result is:
+```
+1345     3327      483 total #4672
+```
+
+Note that there is a slightly difference (about 40 lines) from the
+Client-Server row in Table 3 because we added some code in
+`demo/ClientServer.v`.
 
 For the Mutual Sum example, run
 ```
@@ -305,7 +326,12 @@ and add the `spec` and `proof` of the last row.
 880     2248      231 total # 3128
 ```
 
-Finally we get `23838 + 7329 + 3128 = 34295` for the number in row `Total`.
+
+In our submitted paper (line 1114), we claimed we added 15k lines of
+code on top of CompCertO. This result is calculated by `23838 + 4672 +
+3128 = 31638; 31638 - 15925 (CompCertO) = 15731`. In our final
+development, we implemented all the examples. Therefore, the total
+statistic of the development is `23838 + 7329 + 3128 = 34295`.
 
 #### Column 4
 The numbers in `Additions(+)` column is the result of subtracting column 2 from column 3.
