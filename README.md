@@ -7,11 +7,11 @@ direct refinement between the source C modules and the target assembly
 modules while retaining the support of both horizontal and vertical
 compositionality and compilation to native assembly interfaces. The
 extended CompCertO is based on CompCert version 3.10.  It is located
-in the [DirectRefinement](DirectRefinement) directory along with
+in the [`DirectRefinement`](DirectRefinement) directory along with
 several examples that demonstrate the effectiveness of the extension
 in end-to-end program verification. For comparison, we also upload a
-copy of [CompCertO](CompCertOv3.10). This artifact accompanies the
-following paper:
+copy of CompCertO in the directory
+[`CompCertOv3.10`](CompCertOv3.10). This artifact accompanies the following paper:
 
 > [*Fully Composable and Adequate Verified Compilation with Direct Refinements between
 Open Modules*](paper/direct-refinement.pdf). Ling Zhang, Yuting Wang, Jinhua Wu, Jeremie
@@ -244,12 +244,12 @@ make
 sudo make install
 ```
 
-## 4. Evaluation of soundness and proof effort
+## 4. Evaluation of Soundness and Proof Effort
 
 ### Soundness 
 To check that there is no admit in the artifact, enter `DirectRefinement` and run
 ```
-grep "Admitted" */*.v
+find . -name "*.v" | xargs grep "Admitted"
 ```
 which should show no admit.
 
