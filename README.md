@@ -179,7 +179,7 @@ virtual machine.
 
 - If you prefer to compile the source code on your own computer, then
 we recommend using the `opam` package manager to set up a build environment in Linux. 
-We have tested the following build commands in the Linux shell (Ubuntu 22.04).
+We have tested the following build commands in the Linux shell (Ubuntu 20.04).
 ```
     # Initialize opam (if you haven't used it before)
     opam init --bare
@@ -197,7 +197,7 @@ We have tested the following build commands in the Linux shell (Ubuntu 22.04).
 ### 3.2. Instructions for compiling the Coq code
 
 The Coq code is located in the `DirectRefinement` directory.
-First, you need to build a library named [Coqrel](https://github.com/CertiKOS/coqrel/tree/38dd003d28c91b1b93c01a160a31cdbc3348916a)),
+First, you need to build a library named [Coqrel](https://github.com/CertiKOS/coqrel/tree/38dd003d28c91b1b93c01a160a31cdbc3348916a),
 ```
 (cd coqrel && ./configure && make)
 ```
