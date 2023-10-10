@@ -350,8 +350,8 @@ Below we first briefly present the background of CompCertO as described in Secti
 (for CompCert's block-based memory model (Section 2.1.1), see 
 [common/Values.v](DirectRefinement/common/Values.v) and
 [common/Memory.v](DirectRefinement/common/Memory.v)).
-We then demonstrate the key definitions and theorems for building the direct refinement (Section 3 and 4).
-Finally we discuss the examples of end-to-end verification using the direct refinement (Section 5).
+We then discuss the key definitions and theorems for building the direct refinement (Section 3 and 4).
+Finally, we discuss the examples of end-to-end verification using the direct refinement (Section 5).
 
 
 ### 5.1. Background: CompCertO (Section 2)
@@ -384,20 +384,20 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 
 
 - The *open simulation* is defined as `forward_simulation` in 
-  [common/Smallstep.v](DirectRefinement/common/Smallstep.v). The core of it
+  [common/Smallstep.v](DirectRefinement/common/Smallstep.v). Its core component
   is `fsim_properties` which corresponds to Figure 5 (line 344) in the paper.
 
 #### Kripke memory relations
 
 - (Definition 2.1, line 411) *Kripke Memory Relation* is defined as `cklr` in 
   [cklr/CKLR.v](DirectRefinement/cklr/CKLR.v). Different memory relations
-  and their properties are in the [cklr](DirectRefinment/cklr) directory.
+  and their properties are also in the [cklr](DirectRefinment/cklr) directory.
 
 - For the *world accessibility* (line 395-407), see the C-level simulation convention
   `cc_c`  defined in [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v)
   as an example. It defines the simulation convention between C interfaces
-  parameterized over memory relation `R` as:
-  :
+  parameterized over a memory relation `R`, as follows:
+
   ```
   Program Definition cc_c (R: cklr): callconv li_c li_c :=
   {|
@@ -456,7 +456,7 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
   and `ec_perm` for external calls. 
   The *unchanged-on* relation (line 424) is defined as `unchanged_on` in
   [common/Memory.v](DirectRefinement/common/Memory.v).
-  Note that `Mem_sup_include (Mem.support m1) (Mem.support m2)` is included in the definition of
+  Note that `Mem.sup_include (Mem.support m1) (Mem.support m2)` is included in the definition of
   `Mem.unchanged_on P m1 m2`. Therefore all the three properties of `ro_acc` are
   present in the definition of `injp_acc` and together denote *mem-acc* in our paper.
 
@@ -469,7 +469,7 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 - The composition of simulation conventions (line 561) is defined as `cc_compose` in
   [common/LanguageInterface.v](DirectRefinement/common/LanguageInterface.v).
   
-#### Refinement of calling conventions
+#### Refinement of simulation conventions
 
 -  The refinement of simulation conventions (line 571-572) is defined as `ccref` 
    in [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
@@ -482,11 +482,11 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 #### Refinement of kripke memory relations
 
 - The refinement of kripke memory relations (line 620-622) is defined as `subcklr`
-  in [cklr/CKLRAlgebra.v](DirectRefinement/cklr/CKLRAlgebra.v). Similarly
+  in [cklr/CKLRAlgebra.v](DirectRefinement/cklr/CKLRAlgebra.v). That is,
   $`K \sqsubseteq L`$ corresponds to `subcklr L K`. The equivalence is defined
   as `eqcklr` in the same file.
   
-- Showing the refinement of simulation conventions from the refinement over
+- Deriving the refinement of simulation conventions from the refinement over
   parameterizing KMRs (line 624-626) corresponds to the lemma
   `cc_c_ref` in [cklr/CKLRAlgebra.v](DirectRefinement/cklr/CKLRAlgebra.v) for
   simulation conventions at C level `cc_c`. A similar lemma `cc_asm_ref` for
@@ -510,7 +510,7 @@ The first step is to construct the injections and shape of `m2'` using
 the operation `update_meminj12` defined in 
 [cklr/InjectFootprint.v](DirectRefinement/cklr/InjectFootprint.v).
 
-Then, the values and permissions for newly allocated blocks are copied as:
+Then, the values and permissions for newly allocated blocks are copied:
 
 ```
 Definition m2'1 := Mem.step2 m1 m2 m1' s2' j1'.
@@ -526,8 +526,8 @@ These memory operations are defined in
 the memory model of CompCert is that there is no way to get the
 footprint of permissions because the permissions for memory locations
 are stored as a function (in field `mem_access`). To solve this problem, we changed 
-the type of `mem_access` into a tree data structure, so that we can enumerate the valid (with nonempty permissions)
-locations of a memory block.
+the type of `mem_access` into a tree data structure, so that we can enumerate the valid 
+locations (with nonempty permissions) of memory.
 ```
 Record mem' : Type := mkmem {
   ...
@@ -545,7 +545,7 @@ achieve the "real" vertical composition of open simulations as depicted in Figur
 
 - Table 1 can be checked against `CompCertO's_passes` in
   [driver/Compiler.v](DirectRefinement/driver/Compiler.v).
-  The definitions used in the table can be located as follows.  The
+  The
   simulation conventions $`\mathit{c}_K`$, $`\mathit{ltl}_K`$, $`\mathit{mach}_K`$
   and $`\mathit{asm}_K`$ (line 814) correspond to `cc_c`,
   `cc_locset`, `cc_mach` and `cc_asm` defined in
@@ -553,7 +553,7 @@ achieve the "real" vertical composition of open simulations as depicted in Figur
   [backend/Conventions.v](DirectRefinement/backend/Conventions.v),
   [backend/Mach.v](DirectRefinement/backend/Mach.v) and
   [x86/Asm.v](DirectRefinement/x86/Asm.v).
-  The structure simulation conventions $`\mathit{CL}`$, $`\mathit{LM}`$ and
+  The simulation conventions $`\mathit{CL}`$, $`\mathit{LM}`$ and
   $`\mathit{MA}`$ (line 823) correspond to `cc_c_locset`, `cc_locset_mach` and `cc_mach_asm`
   defined in [backend/Conventions](DirectRefinement/backend/Conventions.v),
   [driver/CallConv.v](DirectRefinement/driver/CallConv.v) and
@@ -574,7 +574,7 @@ Record invariant {li: language_interface} :=
   }.
 ```
 
-- (Defintion 4.2, line 874) For the passes using static analysis, we invented a new
+(Defintion 4.2, line 874) For the passes using static analysis, we invented a new
 invariant `ro` in [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
 ```
 Definition ro : invariant li_c :=
@@ -602,14 +602,14 @@ The same theorems and similar proofs can be found in
 [backend/Deadcodeproof.v](DirectRefinement/backend/Deadcodeproof.v).
 
 - (line 907-914) For [Unusedglob](DirectRefinement/backend/Unusedglobproof.v) pass, we
-allowing for local static definitions to be removed while retaining
+allow for local static definitions to be removed while retaining
 their symbols. That is, we assume the global symbol tables are the same
 for source and target semantics which enables us to use `inj` instead
 of `injp` as its KMR.
 
 #### Unification of the simulation conventions
 
-We have mentioned the corresponding theorems for refining
+We have already listed the theorems for refining
 simulation conventions (Section 4.2 and Theorem 4.8) in the 
 previous section `List of Claims`.
 The direct simulation convention $`\mathbb{C}`$ (line 973)
@@ -624,7 +624,7 @@ Definition cc_compcert : callconv li_c li_asm :=
 Where `cc_c_asm_injp` (`CAinjp` in the paper) is defined in 
 [driver/CA.v](DirectRefinement/driver/CA.v). The proof of merging
 `c_injp`, `CL`, `LM` and `MA` into `CAinjp` which is used in the 
-final step (line 1005) is also here:
+final step (line 1005) is also there:
 ```
 Lemma ca_cllmma_equiv :
   cceqv cc_c_asm (cc_c_locset @ cc_locset_mach @ cc_mach_asm).
@@ -634,8 +634,8 @@ Lemma cainjp__injp_ca_equiv:
 ```
 
 Theorem 4.9 (line 977) is proved as `clight_semantics_preservation`
-in [driver/Compiler.v](DirectRefinement/driver/Compiler.v) together with
-the backward simulation:
+in [driver/Compiler.v](DirectRefinement/driver/Compiler.v) (together with
+a backward simulation):
 ```
 Theorem clight_semantic_preservation:
   forall p tp,
@@ -644,9 +644,9 @@ Theorem clight_semantic_preservation:
   /\ backward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp).
 ```
 
-The unification of simulation convention (line 993-1017) is slightly different
-from the formal proofs in [driver/Compiler.v](DirectRefinement/driver/Compiler.v).
-As in the paper, we take the outgoing side for example.
+The unification of simulation conventions (line 993-1017) is decomposed into several
+steps in the formal proofs in [driver/Compiler.v](DirectRefinement/driver/Compiler.v).
+As discussed in the paper, we take the outgoing side as an example.
 We first extend `cc_compcert` to `cc_compcert_dom` as follows:
 ```
 Definition cc_compcert_dom : callconv li_c li_asm :=
@@ -659,8 +659,8 @@ Theorem cc_compcert_merge:
   forward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp).  
 ```
 
-Then we define the simulation convention `cc_c_level` for C level passes except for
-`Unusedglob` Thus we partially extend `cc_compcert_dom` to satisfy the passes after
+Then, we define the simulation convention `cc_c_level` for C level passes except for
+`Unusedglob`. Thus, we partially extend `cc_compcert_dom` to satisfy the passes after
 `Deadcode`:
 
 ```
@@ -678,7 +678,7 @@ Lemma cc_compcert_collapse:
     cc_compcert_dom.
 ```
 
-Finally we extend `cc_c_level` to satisfy the passes at C level:
+Finally, we extend `cc_c_level` to satisfy the passes at C level:
 
 ```
 Lemma cc_c_level_collapse:
@@ -692,9 +692,9 @@ Lemma cc_c_level_collapse:
         )
         cc_c_level.
 ```
-Therefore the outgoing simulation conventions can be refined into our direct simulation 
-convention `cc_compcert`. The incoming simulation conventions are refined similarly
-through `cc_compcert_cod`.
+Therefore, the outgoing simulation conventions can be refined into our direct simulation 
+convention `cc_compcert`. The incoming simulation conventions are refined in a similar way
+as formalized in `cc_compcert_cod`.
 
 ### 5.4. End-to-end verification of heterogeneous modules (Section 5)
 
@@ -719,8 +719,8 @@ First, we show the refinement between the specification of
 `server_opts`.
 
 * (Definition 5.1) The hand-written specification ($`L_S`$) for the
-  optimized server (i.e., `server_opt.s`) is defined by `L2` in [demo/Serverspec.v](DirectRefinement/demo/Serverspec.v#L116). The hand-written specification (not
-  discussed in the paper) for `server.s` is defined by `L1` in [demo/Serverspec.v](DirectRefinement/demo/Serverspec.v#L98).
+  optimized server (i.e., `server_opt.s`) is defined by `L2` in [demo/Serverspec.v](DirectRefinement/demo/Serverspec.v#L116). The hand-written specification 
+  for `server.s` is defined by `L1` in [demo/Serverspec.v](DirectRefinement/demo/Serverspec.v#L98).
 * (Theorem 5.2) It corresponds to `semantics_preservation_L2` in
   [demo/Serverproof.v](DirectRefinement/demo/Serverproof.v#L1581).
   ```
