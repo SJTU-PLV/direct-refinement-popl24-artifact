@@ -740,7 +740,7 @@ specification ($`L_{CS}`$) and the semantic composition of `client.c` and
 $`L_S`$. Then, we use the correctness of the compiler and vertical
 compositionality to establish the end-to-end refinement.
 
-* Definition of the top-level specification (for optimized server `server_opt.s`) `L_cs` is `top_spec2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#L138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](DirectRefinement/demo/ClientServerCspec.v#L136).
+* Definition of the top-level specification (for optimized server `server_opt.s`) $`L_{CS}`$ is `top_spec2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#L138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](DirectRefinement/demo/ClientServerCspec.v#L136).
 * (Lemma 5.3) It is defined by `top_simulation_L2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#L832). 
   ```
   Lemma top_simulation_L2:
