@@ -455,7 +455,7 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
     |}.
 	```
 
-- The accessibility of `injp` is defined as `injp_acc` in the same file:
+- (line 420-422) The accessibility of `injp` is defined as `injp_acc` in the same file:
 	```
     Inductive injp_acc: relation injp_world :=
       injp_acc_intro f m1 m2 Hm f' m1' m2' Hm':
@@ -499,11 +499,11 @@ Lemma injp_injp:
   subcklr injp (injp @ injp).
 ```
 
-Here, `subcklr` denotes the refinement of Kripke memory relations. The lemma
+Here, `subcklr` denotes the refinement of Kripke memory relations (line 620-622). The lemma
 `cc_c_ref` in [cklr/CKLRAlgebra.v](DirectRefinement/cklr/CKLRAlgebra.v)
 converts `subcklr R S` into the refinement of simulation conventions
-`ccref (cc_c R) (cc_c S)` at C level. A similar lemma `cc_asm_ref` for `cc_asm` is defined
-in [x86/Asm.v](DirectRefinement/x86/Asm.v).
+`ccref (cc_c R) (cc_c S)` at C level. A similar lemma `cc_asm_ref` for simulation conventions
+at Asm level is defined in [x86/Asm.v](DirectRefinement/x86/Asm.v).
 
 We briefly discuss the steps for constructing interpolating memory state
 (as discussed in the paper line 738-753).
@@ -545,17 +545,18 @@ achieve the "real" vertical composition of open simulations as depicted in Figur
 #### Proofs of individual passes
 
 - Table 1 can be checked against `CompCertO's_passes` in
-  [driver/Compiler.v](DirectRefinement/driver/Compiler.v).  The
-  definitions used in the table can be located as follows.  The
-  simulation conventions between the same language interfaces `cc_c`,
-  `cc_locset`, `cc_mach` and `cc_asm` (line 813) are defined in in
+  [driver/Compiler.v](DirectRefinement/driver/Compiler.v).
+  The definitions used in the table can be located as follows.  The
+  simulation conventions $`\mathit{c}_K`$, $`\mathit{ltl}_K`$, $`\mathit{mach}_K`$
+  and $`\mathit{asm}_K`$ (line 814) correspond to `cc_c`,
+  `cc_locset`, `cc_mach` and `cc_asm` defined in
   [common/Languageinterface.v](DirectRefinement/common/LanguageInterface.v),
   [backend/Conventions](DirectRefinement/backend/Conventions.v),
   [backend/Mach.v](DirectRefinement/backend/Mach.v) and
-  [x86/Asm.v](DirectRefinement/x86/Asm.v).  The structure simulation
-  conventions `cc_c_locset`, `cc_locset_mach` and `cc_mach_asm` (line
-  823) are defined in
-  [backend/Conventions](DirectRefinement/backend/Conventions.v),
+  [x86/Asm.v](DirectRefinement/x86/Asm.v).
+  The structure simulation conventions $`\mathit{CL}`$, $`\mathit{LM}`$ and
+  $`\mathit{MA}`$ (line 823) correspond to `cc_c_locset`, `cc_locset_mach` and `cc_mach_asm`
+  defined in [backend/Conventions](DirectRefinement/backend/Conventions.v),
   [driver/CallConv.v](DirectRefinement/driver/CallConv.v) and
   [x86/Asm.v](DirectRefinement/x86/Asm.v).  Note that all those
   definitions already exist in the original CompCertO; we simply use them as
@@ -574,8 +575,8 @@ Record invariant {li: language_interface} :=
   }.
 ```
 
-For the passes using static analysis, we invented a new invariant `ro` in
-[backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
+- (Defintion 4.2, line 874) For the passes using static analysis, we invented a new
+invariant `ro` in [backend/ValueAnalysis.v](DirectRefinement/backend/ValueAnalysis.v):
 ```
 Definition ro : invariant li_c :=
   {|
@@ -585,16 +586,23 @@ Definition ro : invariant li_c :=
   |}.
 ```
 
-The proof which uses `injp` to protect the values of
-unreachable local variables (Fig. 14) is carried out in the lemma
- `transf_external_states` in 
+- (Lemma 4.1, line 861) The correctness theorem of `Constprop` corresponds to
+the theorem `transf_program_correct` in
 [backend/Constpropproof.v](DirectRefinement/backend/Constpropproof.v).
+The correctness theorems for other changed passes in Table 1 have the same name.
+They can be found in 
+[backend/CSEproof.v](DirectRefinement/backend/CSEproof.v),
+[backend/Deadcodeproof.v](DirectRefinement/backend/Deadcodeproof.v)
+and [backend/Unusedglobproof.v](DirectRefinement/backend/Unusedglobproof.v).
 
+- (line 898-906 and Fig. 14) The proof which uses `injp` to protect the values of
+unreachable local variables is carried out in the lemma  `transf_external_states` in 
+[backend/Constpropproof.v](DirectRefinement/backend/Constpropproof.v).
 The same theorems and similar proofs can be found in
 [backend/CSEproof.v](DirectRefinement/backend/CSEproof.v) and
 [backend/Deadcodeproof.v](DirectRefinement/backend/Deadcodeproof.v).
 
-For [Unusedglob](DirectRefinement/backend/Unusedglobproof.v) pass, we
+- (line 907-914) For [Unusedglob](DirectRefinement/backend/Unusedglobproof.v) pass, we
 allowing for local static definitions to be removed while retaining
 their symbols. That is, we assume the global symbol tables are the same
 for source and target semantics which enables us to use `inj` instead
@@ -602,8 +610,9 @@ of `injp` as its KMR.
 
 #### Unification of the simulation conventions
 
-We have mentioned the corresponding theorems of the properties for refining
-simulation conventions in Section 4.2 in the `List of technical claims` part.
+We have mentioned the corresponding theorems for refining
+simulation conventions (Section 4.2 and Theorem 4.8) in the 
+previous section `List of Claims`.
 The direct simulation convention $`\mathbb{C}`$ (line 973)
 is defined as `cc_compcert` in [driver/Compiler.v](DirectRefinement/driver/Compiler.v):
 ```
@@ -615,8 +624,8 @@ Definition cc_compcert : callconv li_c li_asm :=
 
 Where `cc_c_asm_injp` (`CAinjp` in the paper) is defined in 
 [driver/CA.v](DirectRefinement/driver/CA.v). The proof of merging
-`c_injp`, `CL`, `LM` and `MA` into `CAinjp` is also here:
-
+`c_injp`, `CL`, `LM` and `MA` into `CAinjp` which is used in the 
+final step (line 1005) is also here:
 ```
 Lemma ca_cllmma_equiv :
   cceqv cc_c_asm (cc_c_locset @ cc_locset_mach @ cc_mach_asm).
@@ -625,9 +634,20 @@ Lemma cainjp__injp_ca_equiv:
   cceqv cc_c_asm_injp (cc_c injp @ cc_c_asm).
 ```
 
-The unification of simulation convention in 
-[driver/Compiler.v](DirectRefinement/driver/Compiler.v) is slightly different
-as we presented in the paper. As in the paper, we take the outgoing side for example.
+Theorem 4.9 (line 977) is proved as `clight_semantics_preservation`
+in [driver/Compiler.v](DirectRefinement/driver/Compiler.v) together with
+the backward simulation:
+```
+Theorem clight_semantic_preservation:
+  forall p tp,
+  match_prog p tp ->
+  forward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp)
+  /\ backward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp).
+```
+
+The unification of simulation convention (line 993-1017) is slightly different
+from the formal proofs in [driver/Compiler.v](DirectRefinement/driver/Compiler.v).
+As in the paper, we take the outgoing side for example.
 We first extend `cc_compcert` to `cc_compcert_dom` as follows:
 ```
 Definition cc_compcert_dom : callconv li_c li_asm :=
@@ -640,8 +660,8 @@ Theorem cc_compcert_merge:
   forward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp).  
 ```
 
-Then we define the simulation convention `cc_c_level` for the frontend of C level
-passes. Thus we partially extend `cc_compcert_dom` to satisfy the passes after
+Then we define the simulation convention `cc_c_level` for C level passes except for
+`Unusedglob` Thus we partially extend `cc_compcert_dom` to satisfy the passes after
 `Deadcode`:
 
 ```
@@ -649,7 +669,7 @@ Definition cc_c_level : callconv li_c li_c := ro @ wt_c @ injp.
 
 Lemma cc_compcert_collapse:
   ccref
-    (cc_c_level @                                 (* Passes up to Unusedglob *)
+    (cc_c_level @                                 (* Passes up to Deadcode *)
      cc_c inj @                                   (* Unusedglob *)
      (wt_c @ cc_c ext @ cc_c_locset) @            (* Alloc *)
      cc_locset ext @                              (* Tunneling *)
@@ -673,15 +693,10 @@ Lemma cc_c_level_collapse:
         )
         cc_c_level.
 ```
-Therefore the simulation conventions can be refined into our direct simulation 
-convention as proved in the theorem `clight_semantics_preservation` (Theorem 4.9):
-```
-Theorem clight_semantic_preservation:
-  forall p tp,
-  match_prog p tp ->
-  forward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp)
-  /\ backward_simulation cc_compcert cc_compcert (Clight.semantics1 p) (Asm.semantics tp).
-```
+Therefore the outgoing simulation conventions can be refined into our direct simulation 
+convention `cc_compcert`. The incoming simulation conventions are refined similarly
+through `cc_compcert_cod`.
+
 ### 5.4. End-to-end verification of heterogeneous modules (Section 5)
 
 In the section 5 of the paper, we introduce the end-to-end
