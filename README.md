@@ -28,7 +28,7 @@ more organized and complete explanation of the Coq formalization is
 located in the section "Structure of the Formal Proofs" below.
 
 ### Section 2
-- The simulation convention $\mathbb{C}$ for the direct refinement in
+- The simulation convention `\mathbb{C}` for the direct refinement in
   Section 2.2 (line 450) corresponds to the definition
   [cc_c_asm_injp](DirectRefinement/driver/CA.v#L184) in the Coq file
   [driver/CA.v](DirectRefinement/driver/CA.v).
@@ -397,7 +397,7 @@ The *Open LTS* (line 369-377) is defined by `lts` in the same file.
 
 -  The refinement of simulation conventions (line 571-572) is defined as `ccref` 
    in [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
-   Note that $\mathbb{R} \sqsubseteq \mathbb{S}$ corresponds to `ccref S R`.
+   Note that `\mathbb{R} \sqsubseteq \mathbb{S}` corresponds to `ccref S R`.
    The equivalence is defined as `cceqv` in the same file.
 
 -  Theorem 2.4 (line 580) is defined as `open_fsim_ccref` in 
@@ -571,7 +571,7 @@ The proofs of remaining passes are unchanged from CompCertO.
 
 We have mentioned the corresponding theorems of the properties for refining
 simulation conventions in Section 4.2 in the `List of technical claims` part.
-The direct simulation convention $\mathbb{C}$ (line 973)
+The direct simulation convention `\mathbb{C}` (line 973)
 is defined as `cc_compcert` in [driver/Compiler.v](DirectRefinement/driver/Compiler.v):
 ```
 Definition cc_compcert : callconv li_c li_asm :=
@@ -668,10 +668,10 @@ are shown in Figure 3 in our paper.
 #### Refinement for the Hand-written Server (Section 5.1)
 
 First, we show the refinement between the specification of
-`server_opt.s` (i.e., $`L_S`$ in our paper) and the semantics of
+`server_opt.s` (i.e., `L_s` in our paper) and the semantics of
 `server_opts`.
 
-* (Definition 5.1) The hand-written specification ($L_S$) for the
+* (Definition 5.1) The hand-written specification (`L_s`) for the
   optimized server (i.e., `server_opt.s`) is defined by `L2` in [demo/Serverspec.v](DirectRefinement/demo/Serverspec.v#L116). The hand-written specification (not
   discussed in the paper) for `server.s` is defined by `L1` in [demo/Serverspec.v](DirectRefinement/demo/Serverspec.v#L98).
 * (Theorem 5.2) It corresponds to `semantics_preservation_L2` in
@@ -689,11 +689,11 @@ First, we show the refinement between the specification of
 #### End-to-End Correctness Theorem (Section 5.2)
 
 In this section, we first show the refinement between the top-level
-specification ($`L_{CS}`$) and the composition of `client.c` and
-$`L_S`$. And then we use the correctness of the compiler and vertical
+specification (`L_cs`) and the composition of `client.c` and
+`L_s`. And then we use the correctness of the compiler and vertical
 compositionality to establish the end-to-end refinement.
 
-* Definition of the top-level specification (for optimized server `server_opt.s`) $L_{CS}$ is `top_spec2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#L138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](DirectRefinement/demo/ClientServerCspec.v#L136).
+* Definition of the top-level specification (for optimized server `server_opt.s`) `L_cs` is `top_spec2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#L138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](DirectRefinement/demo/ClientServerCspec.v#L136).
 * (Lemma 5.3) It is defined by `top_simulation_L2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#L832). 
   ```
   Lemma top_simulation_L2:
