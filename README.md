@@ -39,8 +39,8 @@ located in the section "Structure of Formal Proofs" below.
   Note that this theorem is part of the background and has already been proved in CompCertO.
   
 - Theorem 2.4 from Section 2.4 (line 580) corresponds to the theorem
-  [open_fsim_ccref](DirectRefinement/common/CallconvAlgebra.v#76) in the Coq file
-  [common/CallconvAlgebra.v](DirectRefinement/common/CallconvAlgebra.v).
+  [open_fsim_ccref](./DirectRefinement/common/CallconvAlgebra.v#L76) in the Coq file
+  [common/CallconvAlgebra.v](./DirectRefinement/common/CallconvAlgebra.v).
   Note that this theorem is part of the background and has already been proved in CompCertO.
   
 ### Section 3
@@ -126,10 +126,10 @@ located in the section "Structure of Formal Proofs" below.
   [demo/Serverproof.v](DirectRefinement/demo/Serverproof.v).
 
 - Lemma 5.3 from Section 5.2 (line 1087) is defined is the vertical composition of theorems
-  [top2_ro](DirectRefinement/demo/ClientServercspec2.v#L211), 
-  [top2_wt](DirectRefinement/demo/ClientServercspec2.v#L234) and 
-  [top_simulation_L2](DirectRefinement/demo/ClientServercspec2.v#L832) in the Coq file 
-  [demo/ClientServercspec2.v](DirectRefinement/demo/ClientServercspec2.v).
+  [top2_ro](DirectRefinement/demo/ClientServerCspec2.v#L211), 
+  [top2_wt](DirectRefinement/demo/ClientServerCspec2.v#L234) and 
+  [top_simulation_L2](DirectRefinement/demo/ClientServerCspec2.v#L832) in the Coq file 
+  [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v).
 
 - Theorem 5.4 (line 1097) corresponds to the lemma 
   [asm_linking](DirectRefinement/x86/AsmLinking.v#L371) in 
