@@ -708,17 +708,17 @@ First, we show the refinement between the specification of
   Lemma semantics_preservation_L2:
     forward_simulation cc_compcert cc_compcert L2 (Asm.semantics b2).
   ```
-  This proof is decomposed into
+  This proof is decomposed into two lemmas:
   [self_simulation_wt](DirectRefinement/demo/Serverproof.v#L1533) and
-  [CAinjp_simulation_L2](DirectRefinement/demo/Serverproof.v#L1089) in the same file.
-  For the proof of `CAinjp_simulation_L2`, the simulation relation is defined by [match_state_c_asm](DirectRefinement/demo/Serverproof.v#L42).
+  [CAinjp_simulation_L2](DirectRefinement/demo/Serverproof.v#L1089).
+  The simulation relation for proving `CAinjp_simulation_L2` is defined by [match_state_c_asm](DirectRefinement/demo/Serverproof.v#L42).
   
 
 #### End-to-end correctness theorem (Section 5.2)
 
 In this section, we first show the refinement between the top-level
-specification (`L_cs`) and the composition of `client.c` and
-`L_s`. And then we use the correctness of the compiler and vertical
+specification (`L_cs`) and the semantic composition of `client.c` and
+`L_s`. Then, we use the correctness of the compiler and vertical
 compositionality to establish the end-to-end refinement.
 
 * Definition of the top-level specification (for optimized server `server_opt.s`) `L_cs` is `top_spec2` in [demo/ClientServerCspec2.v](DirectRefinement/demo/ClientServerCspec2.v#L138). The top-level specification for `server.s` is defined by `top_spec1` in [demo/ClientServerCspec.v](DirectRefinement/demo/ClientServerCspec.v#L136).
@@ -727,9 +727,9 @@ compositionality to establish the end-to-end refinement.
   Lemma top_simulation_L2:
     forward_simulation (cc_c injp) (cc_c injp) top_spec2 composed_spec2.
   ```
-  The simulation relation is defined by
-  [match_state](DirectRefinement/demo/ClientServerCspec2.v#L254) in the same file. For
-  the same theorem for unoptimized server, we define it in
+  Its simulation relation is defined by
+  [match_state](DirectRefinement/demo/ClientServerCspec2.v#L254). A similar lemma for verifying
+  the unoptimized server is defined by
   [top_simulation_L1](DirectRefinement/demo/ClientServerCspec.v#L136).
 
 * (Theorem 5.4) The theorem of horizontal composition corresponds to
@@ -737,20 +737,6 @@ compositionality to establish the end-to-end refinement.
   [common/SmallstepLinking.v](DirectRefinement/common/SmallstepLinking.v#L338). The
   adequacy theorem corresponds to `asm_linking` in
   [x86/AsmLinking.v](DirectRefinement/x86/AsmLinking.v#L371).
-  ```
-  Lemma compose_simulation {li1 li2} (cc: callconv li1 li2) L1a L1b L1 L2a L2b L2:
-    forward_simulation cc cc L1a L2a ->
-    forward_simulation cc cc L1b L2b ->
-    compose L1a L1b = Some L1 ->
-    compose L2a L2b = Some L2 ->
-    forward_simulation cc cc L1 L2.
-  ```
-  ```
-  Lemma asm_linking:
-  forward_simulation cc_id cc_id
-    (SmallstepLinking.semantics L (erase_program p))
-    (semantics p).
-  ```
 * (Lemma 5.5) It corresponds to `compose_Client_Server_correct2` in [demo/ClientServer.v](DirectRefinement/demo/ClientServer.v#L42).
 * (Lemma 5.6) It corresponds to `ro_injp_cc_compcert` in [demo/ClientServer.v](DirectRefinement/demo/ClientServer.v#L76).
   ```
@@ -762,13 +748,12 @@ compositionality to establish the end-to-end refinement.
   Theorem spec_sim_2 : forward_simulation cc_compcert cc_compcert top_spec2 (Asm.semantics tp2).
   ```
   
-#### Other examples
+#### Additional examples
 
-The following examples are not discussed in our paper, because they
-are more complicated than the client-server example introduced in our
-paper. However, we implement and verify them to show the effectiveness of our framework.
+The following example is not discussed in our paper because of limit in space. It demonstrates
+how mutual recursion can be handled with direct refinement.
 
-##### Mutual Recursive Client-Server Example
+##### Mutually recursive client-server 
 
 We define a mutual recursive client-server example where the server
 code is the same as `server.s` in [demo/Server.v](DirectRefinement/demo/Server.v) and the
@@ -798,15 +783,15 @@ void request (int *r){
 }
 ```
 
-* `client_mr.c` is defined by the Coq definition `client` in
+* `client_mr.c` is defined by `client` in
   [demo/ClientMR.v](DirectRefinement/demo/ClientMR.v#L157).
 * The definition of servers are the same as the examples (`server.s`
   and `server_opt.s`) introduced in our paper, i.e., it is defined by
   `b1` and `b2` in [demo/Server.v](DirectRefinement/demo/Server.v). Note that we
   implement the repeated invocation by directly passing the `request`
-  function in `client` to the server. Thereby the server can jump to
+  function in `client` to the server. Therefore, the server can jump to
   the call-back function (the `request` function in client) to encrypt
-  the subsequent data.
+  the remaining data.
 * The top level specification is defined by `top_spec1` in
   [demo/ClientServerMRCSpec.v](DirectRefinement/demo/ClientServerMRCSpec.v#L150).
 * The refinement between the top-level specification and composition of `client_mr.c` and `L1` is defined by `top_simulation_L1` in [demo/ClientServerMRCspec.v](DirectRefinement/demo/ClientServerMRCSpec.v#L844).
@@ -824,7 +809,7 @@ void request (int *r){
   ```
 
 
-##### Mutual Summation Example
+##### Mutual summation 
 
 We present the application of our method to an example borrowed from
 CompCertM[^2] — two programs that mutually invoke each other to finish
@@ -884,8 +869,8 @@ l1: Pmov 8(RSP) RBX
     Pret
 ```
 
-The procedure of the refinement is shown below:
-* First, like what we do for the server in the above example, we define a high-level specification (called `L_A`) for `M_A`. The definition of `L_A` is in [demo/Demospec.v](DirectRefinement/demo/Demospec.v#L88) with the same name. The refinement is defined by `M_A_semantics_preservation` in [demo/Demoproof](DirectRefinement/demo/Demoproof.v). 
+The refinement is proved as follows:
+* First, like what we do for the client-server example, we define a high-level specification (called `L_A`) for `M_A`. The definition of `L_A` is in [demo/Demospec.v](DirectRefinement/demo/Demospec.v#L88) with the same name. The refinement is defined by `M_A_semantics_preservation` in [demo/Demoproof](DirectRefinement/demo/Demoproof.v). 
   ```
   Lemma M_A_semantics_preservation:
   forward_simulation cc_compcert cc_compcert L_A (Asm.semantics M_A).
