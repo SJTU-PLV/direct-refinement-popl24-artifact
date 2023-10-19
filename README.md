@@ -196,6 +196,10 @@ We have tested the following build commands in the Linux shell (Ubuntu 20.04).
 ```
 ### 3.2. Instructions for compiling the Coq code
 
+Download the source code from github (If you are using the VM, ignore this).
+```
+git clone git@github.com:SJTU-PLV/direct-refinement-popl24-artifact.git
+```
 The Coq code is located in the `DirectRefinement` directory.
 First, you need to build a library named [Coqrel](https://github.com/CertiKOS/coqrel/tree/38dd003d28c91b1b93c01a160a31cdbc3348916a),
 ```
