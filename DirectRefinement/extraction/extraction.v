@@ -166,7 +166,7 @@ Cd "extraction".
 
 Separate Extraction
    Compiler.transf_c_program Compiler.transf_cminor_program
-   Cexec.do_initial_state Cexec.do_step Cexec.at_final_state
+   (* Cexec.do_initial_state Cexec.do_step Cexec.at_final_state *)
    Ctypes.merge_attributes Ctypes.remove_attributes Ctypes.build_composite_env
    Initializers.transl_init Initializers.constval
    Csyntax.Eindex Csyntax.Epreincr Csyntax.Eselection
@@ -185,5 +185,7 @@ Separate Extraction
    Machregs.destroyed_at_indirect_call
    AST.signature_main
    Floats.Float32.from_parsed Floats.Float.from_parsed
-   Globalenvs.Senv.invert_symbol
+   Floats.Float.of_bits Floats.Float.to_bits
+   Floats.Float32.of_bits Floats.Float32.to_bits
+   (* Globalenvs.Senv.invert_symbol *)
    Parser.translation_unit_file.

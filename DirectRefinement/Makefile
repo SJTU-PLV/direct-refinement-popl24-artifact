@@ -167,9 +167,9 @@ CFRONTEND=Ctypes.v Cop.v Csyntax.v Csem.v Ctyping.v Cstrategy.v \
   Clight.v SimplLocals.v SimplLocalsproof.v \
   Cshmgen.v Cshmgenproof.v \
   Csharpminor.v Cminorgen.v Cminorgenproof.v \
-
+  Initializers.v
 # ClightBigstep.v
-# Initializers.v
+
 # Initializersproof.v
 # Cexec.v
 
@@ -223,8 +223,8 @@ GENERATED=\
 all:
 	@test -f .depend || $(MAKE) depend
 	$(MAKE) proof
-	#$(MAKE) extraction
-	#$(MAKE) ccomp
+	$(MAKE) extraction
+	$(MAKE) ccomp
 ifeq ($(HAS_RUNTIME_LIB),true)
 	$(MAKE) runtime
 endif
