@@ -220,7 +220,18 @@ minutes. When using `make` command without any parallel compilation,
 it takes about 20 minutes.
 
 The same instructions should be followed if you also want to compile
-the original CompCert in the directory `CompCertOv3.10`.
+the original CompCertO in the directory `CompCertOv3.10`.
+
+
+For CompCert unit tests, enter the `test` directory and run
+```
+make
+make test
+```
+
+Note that we do not support the tests using interpreter in `test/regression`.
+Because the interpreter relies on the whole program semantics which is not
+implemented (based on open semantics) yet.
 
 You can run `make clean` to clean up the compiled code.
 
